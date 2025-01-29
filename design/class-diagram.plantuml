@@ -1,0 +1,134 @@
+@startuml
+package View.Interfaces{
+    interface SimulationManagementAdapterI {
+        + createSimulation(simulation: Simulation): Promise<Simulation|undefined>;
+
+        + updateSimulation(simulation: Simulation): Promise<Simulation|undefined>;
+
+        + deleteSimulation(id: string): Promise<boolean>;
+
+        + getAllSimulations(): Promise<Simulation[]>;
+
+        + getSimulation(id: string): Promise<Simulation|undefined>;
+    }
+
+    interface SimulationEngineAdapterI{
+        - simulator : SimulatorI
+        + startSimulation(simulation:Simulation, onProgressUpdate:(number)=>void, onError:(error)=>void) : ()=>void
+    }
+
+}
+
+package Adapter{
+
+    class SimulationManagementAdapter implements View.Interfaces.SimulationManagementAdapterI{
+        - simulationRepository : SimulationRepositoryI
+        + createSimulation(simulation: Simulation): Promise<Simulation|undefined>;
+
+        + updateSimulation(simulation: Simulation): Promise<Simulation|undefined>;
+
+        + deleteSimulation(id: string): Promise<boolean>;
+
+        + getAllSimulations(): Promise<Simulation[]>;
+
+        + getSimulation(id: string): Promise<Simulation|undefined>;
+    }
+
+    class SimulationEngineAdapter implements View.Interfaces.SimulationEngineAdapterI{
+        - simulator : SimulatorI
+        + startSimulation(simulation:Simulation, onProgressUpdate:(number)=>void, onError:(error)=>void) : ()=>void
+    }
+}
+
+package Adapter.Interfaces{
+    interface SimulatorI{
+        + startSimulation(simulation:Simulation, onProgressUpdate:(number)=>void, onError:(error)=>void) : ()=>void
+    }
+    interface SimulationRepositoryI {
+        + save(simulation: Simulation): Promise<void>;
+        + getById(id: string): Promise<Simulation | null>;
+        + getAll(): Promise<Simulation[]>;
+        + delete(id: string): Promise<void>;
+    }
+
+}
+
+package Domain.SimulationEngine{
+    class MockSimulator implements Adapter.Interfaces.SimulatorI{
+
+        + startSimulation(simulation:Simulation, onProgressUpdate:(number)=>void, onError:(error)=>void) : ()=>void
+    }
+}
+
+package Domain.DataManegement.Entities{
+    class SimulationParameters {
+        + LFI: number
+        + LM: number
+        + TMDM: number
+        + TMPSC: number
+        + TMPNM: number
+        + QAL: number
+        + QACR: number
+        + IAR: number
+        + distribution: "normal" | "log" | "linear"
+    }
+
+    class SimulationResults {
+        + intertalQueueSizeOverTime: MetricOverTime[];
+        + externalQueueSizeOverTime: MetricOverTime[];
+        + tableOccupancyOverTime: MetricOverTime[];
+        + averageWaitTime: number;
+        + avgExternalQueue: number;
+        + avgWaitTime: number;
+        + maxTableOccupancy: number;
+        + simulationDuration: number;
+    }
+
+    class MetricOverTime {
+        + timestamp: number;
+        +value: number;
+    }
+
+    class Simulation {
+        id: string;
+        name: string;
+        status: "not_started" | "completed";
+        completedAt?: string;
+        parameters: SimulationParameters;
+        results?: SimulationResults;
+    }
+}
+
+package Domain.DataManegement{
+    class SimulationRepository implements Adapter.Interfaces.SimulationRepositoryI{
+        + save(simulation: Simulation): Promise<void>;
+        + getById(id: string): Promise<Simulation | null>;
+        + getAll(): Promise<Simulation[]>;
+        + delete(id: string): Promise<void>;
+    }
+}
+
+' Relacionamentos:
+Simulation "1" *-- "1" SimulationParameters
+Simulation "1" *-- "1" SimulationResults
+SimulationResults "1" *-- "n" MetricOverTime
+SimulationEngineAdapter "1" *-- "1" SimulatorI
+SimulationManagementAdapter "1" *-- "1" SimulationRepositoryI
+
+Adapter -[hidden]-> Domain.SimulationEngine : ""
+Adapter -[hidden]-> Domain.DataManegement : ""
+
+note top of SimulationRepository
+    **Implementação Concreta**:
+    - Persiste dados no localStorage
+    - Implementa a interface SimulationRepositoryI
+    (Inversão de Dependência)
+end note
+
+note left of SimulationRepositoryI
+    **Contrato da Interface**:
+    - Define operações de persistência
+    - Pertence à camada Adapter
+    (Dependência Abstrata)
+end note
+@enduml
