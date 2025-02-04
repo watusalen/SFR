@@ -30,3 +30,10 @@ This project is built with .
 - shadcn-ui
 - Tailwind CSS
 
+## Implementation Instructions
+
+The code in this repository is not complete; you must fork it and implement the simulation repository and the simulation engine. These classes are mocked in the project as SimulationRepositoryMock and MockSimulator, which are located in the following files: src/domain/data-management/simulation-repository.ts and src/domain/simulation-engine/mock-simulator.ts. Replace these classes with fully implemented versions.
+
+- Simulation Engine: You must implement the entire simulation logic, considering the parameters and metrics established in the SimulationParameters and SimulationResults classes.
+- Simulation Repository: You must implement the SimulationRepositoryI interface with the methods save, getById, getAll, and delete.
+
