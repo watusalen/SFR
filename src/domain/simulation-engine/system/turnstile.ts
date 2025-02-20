@@ -34,8 +34,9 @@ export class Turnstile {
     }
 
     public hasSomeone(): boolean {
-        if (this.student) {
+        if(this.student){
             return true;
         }
+        return false;
     }
 }

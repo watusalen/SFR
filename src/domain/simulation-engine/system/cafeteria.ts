@@ -1,6 +1,6 @@
-import { ExternalQueue } from "./external-queue";
-import { InternalQueue } from "./internal-queue";
 import { Table } from "./table";
+import { InternalQueue } from "./internal-queue";
+import { ExternalQueue } from "./external-queue";
 import { Turnstile } from "./turnstile";
 import { Service } from "./service";
 import { Student } from "./student";
@@ -27,16 +27,16 @@ export class Cafeteria {
     public moveStudentFromExternalQueueToTurnstile(): boolean {
         const student: Student = this.externalQueue.removeStudent();
         if (this.turnstile.hasSomeone()) {
-            new Error("Não é possível adicionar um estudante a uma catraca que já está ocupada.");
-        }
-        if (this.internalQueue.checkLimit()) {
-            new Error("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
+            throw new Error("Não é possível adicionar um estudante a uma catraca que já está ocupada.");
         }
         this.turnstile.addStudent(student);
         return true;
     }
 
     public moveStudentFromTurnstileToInternalQueue(): boolean {
+        if (this.internalQueue.checkLimit()) {
+            throw new Error("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
+        }
         const student: Student = this.turnstile.removeStudent();
         this.internalQueue.addStudent(student);
         return true;
@@ -45,10 +45,10 @@ export class Cafeteria {
     public moveStudentFromInternalQueueToService(): boolean {
         const student: Student = this.internalQueue.removeStudent();
         if (this.service.hasSomeone()) {
-            new Error("Não é possível adicionar um estudante a um serviço que já está ocupado.");
+            throw new Error("Não é possível adicionar um estudante a um serviço que já está ocupado.");
         }
         if (this.table.checkIfTableIsOccupied()) {
-            new Error("Não é possível adicionar um estudante no serviço porque todas as mesas estão ocupadas.");
+            throw new Error("Não é possível adicionar estudantes a uma mesa que já está ocupada.");
         }
         this.service.addStudent(student);
         return true;
@@ -63,4 +63,8 @@ export class Cafeteria {
     public removeStudentFromCafeteria(): Student {
         return this.table.removeStudent();
     }
+
+    public getInternalQueueSize(): number {
+        return this.internalQueue.checkSizeOfQueue();
+    }    
 }
