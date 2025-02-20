@@ -11,7 +11,7 @@ export class InternalQueue {
 
     public addStudent(student: Student): void {
         if (this.students.length === this.limit) {
-            throw new Error("Não é possível adicionar estudantes a uma fila que está cheia.");
+            throw new Error("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
         }
         this.students.push(student);
     }
@@ -21,7 +21,7 @@ export class InternalQueue {
             throw new Error("Não é possível remover estudantes de uma fila que está vazia.");
         }
         return this.students.shift()!;
-    }
+    }  
 
     public checkLimit(): boolean {
         return this.students.length === this.limit;
