@@ -4,7 +4,7 @@ export class Student {
     private timeToType: number;
     private tableTime: number;
 
-    constructor(arrivalMoment: number, serviceMoment: number, timeToType: number, tableTime: number) {
+    constructor(timeToType: number, tableTime: number) {
         this.timeToType = timeToType;
         this.tableTime = tableTime;
     }
