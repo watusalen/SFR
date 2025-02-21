@@ -20,8 +20,9 @@ export class Cafeteria {
         this.table = new Table(amount);
     }
 
-    public addStudentToExternalQueue(student: Student): void {
+    public addStudentToExternalQueue(student: Student): boolean {
         this.externalQueue.addStudent(student);
+        return true;
     }
 
     public moveStudentFromExternalQueueToTurnstile(): boolean {
@@ -64,7 +65,29 @@ export class Cafeteria {
         return this.table.removeStudent();
     }
 
+    public hasSomeoneInTurnstile(): boolean {
+        if (this.turnstile.hasSomeone()) {
+            return true;
+        }
+        return false;
+    }
+
+    public checkTurnstileStatus(): boolean {
+        if(this.hasSomeoneInTurnstile()){
+            return true;
+        }
+        return false;
+    }
+
+    public lockTheTurnstile(): void {
+        this.turnstile.lock();
+    }
+
+    public unlockTheTurnstile(): void {
+        this.turnstile.unlock();
+    }
+
     public getInternalQueueSize(): number {
         return this.internalQueue.checkSizeOfQueue();
-    }    
+    }
 }
