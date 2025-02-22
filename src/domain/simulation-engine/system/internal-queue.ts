@@ -16,10 +16,6 @@ export class InternalQueue {
         this.students.push(student);
     }
 
-    public getInternalQueueLimit(): number {
-        return this.internalQueueLimit;
-    }
-
     public removeStudent(): Student {
         if (this.students.length === 0) {
             throw new Error("Não é possível remover estudantes de uma fila que está vazia.");
@@ -33,5 +29,9 @@ export class InternalQueue {
     
     public checkSizeOfQueue(): number {
         return this.students.length;
+    }
+
+    public getInternalQueueLimit(): number {
+        return this.internalQueueLimit;
     }
 }

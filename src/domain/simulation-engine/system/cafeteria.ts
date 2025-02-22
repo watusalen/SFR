@@ -26,14 +26,19 @@ export class Cafeteria {
     }
 
     public moveStudentFromExternalQueueToTurnstile(): boolean {
-        const student: Student = this.externalQueue.removeStudent();
+        if (this.checkInternalQueueLimitRecheadMaximum()) {
+            this.turnstileLockBecauseQueueIsFull();
+            return false;
+        }
         if (this.turnstile.hasSomeone()) {
             throw new Error("Não é possível adicionar um estudante a uma catraca que já está ocupada.");
         }
         if (this.turnstile.getLocked()) {
             throw new Error("Não é possível adicionar um estudante a uma catraca que está trancada.");
         }
+        const student: Student = this.externalQueue.removeStudent();
         this.turnstile.addStudent(student);
+        this.turnstileLockBecauseHasSomeone();
         return true;
     }
 
@@ -43,28 +48,44 @@ export class Cafeteria {
         }
         const student: Student = this.turnstile.removeStudent();
         this.internalQueue.addStudent(student);
+        if (!this.checkInternalQueueLimitRecheadMaximum()) {
+            this.turnstileUnlockBecauseHasNoOne();
+        }
         return true;
     }
 
     public moveStudentFromInternalQueueToService(): boolean {
-        const student: Student = this.internalQueue.removeStudent();
+        if (this.checkAllTablesAreOccupied()) {
+            this.serviceLockBecauseTableIsFull();
+            return false;
+        }
         if (this.service.hasSomeone()) {
             throw new Error("Não é possível adicionar um estudante a um serviço que já está ocupado.");
         }
-        if (this.table.checkIfTableIsOccupied()) {
+        if (this.table.checkIfAllTableIsOccupied()) {
             throw new Error("Não é possível adicionar estudantes a uma mesa que já está ocupada.");
         }
+        const student: Student = this.internalQueue.removeStudent();
         this.service.addStudent(student);
+        this.serviceLockBecauseHasSomeone();
         return true;
     }
 
     public moveStudentFromServiceToTable(): boolean {
         const student: Student = this.service.removeStudent();
         this.table.addStudent(student);
+        if (this.hasTableAvaliable()) {
+            this.serviceUnlockBecauseTableGotEmpty();
+        }
         return true;
     }
 
     public removeStudentFromCafeteria(): Student {
+        if (this.checkTurnstileLocked()) {
+            if (this.checkInternalQueueGotShorter()) {
+                this.turnstileUnlockBecauseTheQueueGotShorter();
+            }
+        }
         return this.table.removeStudent();
     }
 
@@ -73,6 +94,13 @@ export class Cafeteria {
             return true;
         }
         return false;
+    }
+
+    public serviceLockBecauseHasSomeone(): boolean {
+        if (this.hasSomeoneInService()) {
+            this.lockTheService();
+            return true;
+        }
     }
 
     public checkServiceLocked(): boolean {
@@ -89,8 +117,12 @@ export class Cafeteria {
         return true;
     }
 
+    public checkAllTablesAreOccupied(): boolean {
+        return this.table.checkIfAllTableIsOccupied();
+    }
+
     public hasTableAvaliable(): boolean {
-        if (this.table.checkIfTableIsOccupied()) {
+        if (this.checkAllTablesAreOccupied()) {
             return false;
         }
         return true;
@@ -131,16 +163,22 @@ export class Cafeteria {
         return true;
     }
 
-    public checkInternalQueueSize(): number {
-        return this.internalQueue.checkSizeOfQueue();
+    public turnstileLockBecauseHasSomeone(): boolean {
+        if (this.hasSomeoneInTurnstile()) {
+            this.lockTheTurnstile();
+            return true;
+        }
     }
 
-    public checkInternalQueueLimitRecheadMaximum(): boolean {
-        return this.internalQueue.checkInternalQueueLimitRecheadMaximum();
+    public turnstileUnlockBecauseHasNoOne(): boolean {
+        if (!this.hasSomeoneInTurnstile()) {
+            this.unlockTheTurnstile();
+            return true;
+        }
     }
 
     public turnstileUnlockBecauseTheQueueGotShorter(): boolean {
-        if (this.checkInternalQueueSize() === (this.internalQueue.getInternalQueueLimit() - this.turnstile.getTurnstileLimit())) {
+        if (this.checkInternalQueueGotShorter()) {
             this.unlockTheTurnstile();
             return true;
         }
@@ -151,5 +189,20 @@ export class Cafeteria {
             this.lockTheTurnstile();
             return true;
         }
+    }
+
+    public checkInternalQueueSize(): number {
+        return this.internalQueue.checkSizeOfQueue();
+    }
+
+    public checkInternalQueueGotShorter(): boolean {
+        if (this.checkInternalQueueSize() === (this.internalQueue.getInternalQueueLimit() - this.turnstile.getTurnstileLimit())) {
+            return true;
+        }
+        return false;
+    }
+
+    public checkInternalQueueLimitRecheadMaximum(): boolean {
+        return this.internalQueue.checkInternalQueueLimitRecheadMaximum();
     }
 }

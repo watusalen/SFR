@@ -22,7 +22,15 @@ export class Table {
         return this.student.shift()!;
     }
 
-    public checkIfTableIsOccupied(): boolean {
+    public checkIfAllTableIsOccupied(): boolean {
         return this.student.length === this.tableLimit;
+    }
+
+    public getTableLimit(): number {
+        return this.tableLimit;
+    }
+
+    public checkManyStudentsAreInTable(): number {
+        return this.student.length;
     }
 }
