@@ -12,11 +12,11 @@ export class Cafeteria {
     private turnstile: Turnstile;
     private service: Service;
 
-    constructor(limit: number, averageServingTime: number, amount: number) {
-        this.internalQueue = new InternalQueue(limit);
-        this.turnstile = new Turnstile();
+    constructor(internalQueueLimit: number, turnstileLimit: number, amount: number) {
+        this.internalQueue = new InternalQueue(internalQueueLimit);
+        this.turnstile = new Turnstile(turnstileLimit);
         this.externalQueue = new ExternalQueue();
-        this.service = new Service(averageServingTime);
+        this.service = new Service();
         this.table = new Table(amount);
     }
 
@@ -30,12 +30,15 @@ export class Cafeteria {
         if (this.turnstile.hasSomeone()) {
             throw new Error("Não é possível adicionar um estudante a uma catraca que já está ocupada.");
         }
+        if (this.turnstile.getLocked()) {
+            throw new Error("Não é possível adicionar um estudante a uma catraca que está trancada.");
+        }
         this.turnstile.addStudent(student);
         return true;
     }
 
     public moveStudentFromTurnstileToInternalQueue(): boolean {
-        if (this.internalQueue.checkLimit()) {
+        if (this.internalQueue.checkInternalQueueLimitRecheadMaximum()) {
             throw new Error("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
         }
         const student: Student = this.turnstile.removeStudent();
@@ -65,6 +68,48 @@ export class Cafeteria {
         return this.table.removeStudent();
     }
 
+    public hasSomeoneInService(): boolean {
+        if (this.service.hasSomeone()) {
+            return true;
+        }
+        return false;
+    }
+
+    public checkServiceLocked(): boolean {
+        return this.service.getLocked();
+    }
+
+    public lockTheService(): boolean {
+        this.service.lock();
+        return true;
+    }
+
+    public unlockTheService(): boolean {
+        this.service.unlock();
+        return true;
+    }
+
+    public hasTableAvaliable(): boolean {
+        if (this.table.checkIfTableIsOccupied()) {
+            return false;
+        }
+        return true;
+    }
+
+    public serviceLockBecauseTableIsFull(): boolean {
+        if (!this.hasTableAvaliable()) {
+            this.lockTheService();
+            return true;
+        }
+    }
+
+    public serviceUnlockBecauseTableGotEmpty(): boolean {
+        if (this.hasTableAvaliable()) {
+            this.unlockTheService();
+            return true;
+        }
+    }
+
     public hasSomeoneInTurnstile(): boolean {
         if (this.turnstile.hasSomeone()) {
             return true;
@@ -72,22 +117,39 @@ export class Cafeteria {
         return false;
     }
 
-    public checkTurnstileStatus(): boolean {
-        if(this.hasSomeoneInTurnstile()){
+    public checkTurnstileLocked(): boolean {
+        return this.turnstile.getLocked();
+    }
+
+    public lockTheTurnstile(): boolean {
+        this.turnstile.lock();
+        return true;
+    }
+
+    public unlockTheTurnstile(): boolean {
+        this.turnstile.unlock();
+        return true;
+    }
+
+    public checkInternalQueueSize(): number {
+        return this.internalQueue.checkSizeOfQueue();
+    }
+
+    public checkInternalQueueLimitRecheadMaximum(): boolean {
+        return this.internalQueue.checkInternalQueueLimitRecheadMaximum();
+    }
+
+    public turnstileUnlockBecauseTheQueueGotShorter(): boolean {
+        if (this.checkInternalQueueSize() === (this.internalQueue.getInternalQueueLimit() - this.turnstile.getTurnstileLimit())) {
+            this.unlockTheTurnstile();
             return true;
         }
-        return false;
     }
 
-    public lockTheTurnstile(): void {
-        this.turnstile.lock();
-    }
-
-    public unlockTheTurnstile(): void {
-        this.turnstile.unlock();
-    }
-
-    public getInternalQueueSize(): number {
-        return this.internalQueue.checkSizeOfQueue();
+    public turnstileLockBecauseQueueIsFull(): boolean {
+        if (this.checkInternalQueueLimitRecheadMaximum()) {
+            this.lockTheTurnstile();
+            return true;
+        }
     }
 }
