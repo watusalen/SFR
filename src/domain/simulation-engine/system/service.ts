@@ -3,11 +3,9 @@ import { Student } from "./student";
 export class Service {
     private locked: boolean;
     private student: Student | undefined;
-    private averageServingTime: number;
 
-    constructor(averageServingTime: number) {
+    constructor() {
         this.locked = false;
-        this.averageServingTime = averageServingTime;
     }
 
     public addStudent(student: Student): void {
@@ -35,9 +33,13 @@ export class Service {
     }
 
     public hasSomeone(): boolean {
-        if(this.student){
+        if (this.student) {
             return true;
         }
         return false;
+    }
+
+    public getLocked(): boolean {
+        return this.locked;
     }
 }

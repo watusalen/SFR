@@ -1,11 +1,13 @@
 export class Student {
     private arrivalMoment: number | undefined;
     private serviceMoment: number | undefined;
-    private timeToType: number;
+    private timeToServe: number;
+    private registrationTime: number;
     private tableTime: number;
-
-    constructor(arrivalMoment: number, serviceMoment: number, timeToType: number, tableTime: number) {
-        this.timeToType = timeToType;
+    
+    constructor(registrationTime: number, timeToServe: number, tableTime: number) {
+        this.registrationTime = registrationTime;
+        this.timeToServe = timeToServe;
         this.tableTime = tableTime;
     }
 
@@ -31,11 +33,24 @@ export class Student {
         return this.serviceMoment;
     }
 
-    public getTimeToType(): number {
-        return this.timeToType;
+    public getRegistrationTime(): number {
+        if (!this.registrationTime) {
+            throw new Error("O momento de digitação do estudante não foi definido.");
+        }
+        return this.registrationTime;
+    }
+
+    public getTimeToServe(): number {
+        if (!this.registrationTime) {
+            throw new Error("O momento que ele foi servido não foi definido.");
+        }
+        return this.registrationTime;
     }
 
     public getTableTime(): number {
+        if (!this.serviceMoment) {
+            throw new Error("O momento de atendimento do estudante não foi definido.");
+        }
         return this.tableTime;
     }
 }

@@ -2,15 +2,15 @@ import { Student } from "./student";
 
 export class InternalQueue {
     private students: Array<Student>;
-    private limit: number;
+    private internalQueueLimit: number;
 
-    constructor(limit: number) {
+    constructor(internalQueueLimit: number) {
         this.students = [];
-        this.limit = limit;
+        this.internalQueueLimit = internalQueueLimit;
     }
 
     public addStudent(student: Student): void {
-        if (this.students.length === this.limit) {
+        if (this.students.length === this.internalQueueLimit) {
             throw new Error("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
         }
         this.students.push(student);
@@ -23,11 +23,15 @@ export class InternalQueue {
         return this.students.shift()!;
     }  
 
-    public checkLimit(): boolean {
-        return this.students.length === this.limit;
+    public checkInternalQueueLimitRecheadMaximum(): boolean {
+        return this.students.length === this.internalQueueLimit;
     }
-
+    
     public checkSizeOfQueue(): number {
         return this.students.length;
+    }
+
+    public getInternalQueueLimit(): number {
+        return this.internalQueueLimit;
     }
 }
