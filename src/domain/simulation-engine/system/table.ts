@@ -2,14 +2,14 @@ import { Student } from "./student";
 
 export class Table {
     private student: Array<Student> = [];
-    private amount: number;
+    private tableLimit: number;
 
-    constructor(amount: number) {
-        this.amount = amount;
+    constructor(tableLimit: number) {
+        this.tableLimit = tableLimit;
     }
 
     public addStudent(student: Student): void {
-        if (this.student.length === this.amount) {
+        if (this.student.length === this.tableLimit) {
             throw new Error("Não é possível adicionar um estudante no serviço porque todas as mesas estão ocupadas.");
         }
         this.student.push(student);
@@ -23,6 +23,6 @@ export class Table {
     }
 
     public checkIfTableIsOccupied(): boolean {
-        return this.student.length === this.amount;
+        return this.student.length === this.tableLimit;
     }
 }

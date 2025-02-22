@@ -2,7 +2,7 @@ import { Cafeteria } from "../system/cafeteria";
 import { Student } from "../system/student";
 import { EventMachine } from "./event-machine";
 import { Event } from "./event";
-import { InternalQueueTransition } from "./internal-queue-transition";
+import { InternalQueueTransition } from "./going-to-internal-queue";
 
 export class TurnstileTransition extends Event {
     private student: Student;

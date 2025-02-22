@@ -3,9 +3,10 @@ import { Student } from "./student";
 export class Turnstile {
     private locked: boolean;
     private student: Student | undefined;
-    private studentsToReleaseTurnstile: number;
+    private turnstileLimit: number;
 
-    constructor() {
+    constructor(turnstileLimit: number) {
+        this.turnstileLimit = turnstileLimit;
         this.locked = false;
     }
 
@@ -34,9 +35,17 @@ export class Turnstile {
     }
 
     public hasSomeone(): boolean {
-        if(this.student){
+        if (this.student) {
             return true;
         }
         return false;
+    }
+
+    public getTurnstileLimit(): number {
+        return this.turnstileLimit;
+    }
+
+    public getLocked(): boolean {
+        return this.locked;
     }
 }

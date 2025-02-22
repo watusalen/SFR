@@ -2,9 +2,9 @@ import { Cafeteria } from "../system/cafeteria";
 import { Student } from "../system/student";
 import { EventMachine } from "./event-machine";
 import { Event } from "./event";
-import { TurnstileTransition } from "./turnstile-transition";
+import { TurnstileTransition } from "./going-to-turnstile";
 
-class StudentArrival extends Event {
+export class StudentArrival extends Event {
     private student: Student;
 
     constructor(timestamp: number, cafeteria: Cafeteria, machine: EventMachine, student: Student) {
@@ -14,14 +14,14 @@ class StudentArrival extends Event {
 
     processEvent(): void {
 
-        console.log(`Evento - Chegada de estudante: ${this.getTimeStamp()}`);
+        console.log(`Evento - Chegada do estudante: ${this.getTimeStamp()}`);
 
         const someoneInTurnstile: boolean = this.cafeteria.hasSomeoneInTurnstile();
-        const checkTunstileStatus : boolean = this.cafeteria.checkTurnstileStatus();
-        const sucess : boolean = this.cafeteria.addStudentToExternalQueue(this.student);
+        const checkTunstileLocked: boolean = this.cafeteria.checkTurnstileLocked();
+        const sucess: boolean = this.cafeteria.addStudentToExternalQueue(this.student);
 
-        if (sucess && !someoneInTurnstile && !checkTunstileStatus) {
-            const scheduling : Event = new TurnstileTransition(this.getTimeStamp(), this.cafeteria, this.machine, this.student);
+        if (sucess && !someoneInTurnstile && !checkTunstileLocked) {
+            const scheduling: Event = new TurnstileTransition(this.getTimeStamp(), this.cafeteria, this.machine, this.student);
             this.machine.addEvent(scheduling);
         }
 
