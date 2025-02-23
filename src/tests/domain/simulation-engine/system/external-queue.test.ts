@@ -2,43 +2,41 @@ import { ExternalQueue } from '@/domain/simulation-engine/system/external-queue'
 import { Student } from '@/domain/simulation-engine/system/student';
 
 describe('ExternalQueue', () => {
-  let externalQueue: ExternalQueue;
-  let student1: Student;
-  let student2: Student;
+    let externalQueue: ExternalQueue;
+    let student1: Student;
+    let student2: Student;
 
-  beforeEach(() => {
-    // Cria uma nova fila externa e dois estudantes para os testes
-    externalQueue = new ExternalQueue();
-    student1 = new Student(10, 15, 2, 5); // arrivalMoment: 10, serviceMoment: 15, timeToType: 2, tableTime: 5
-    student2 = new Student(20, 25, 3, 6); // arrivalMoment: 20, serviceMoment: 25, timeToType: 3, tableTime: 6
-  });
+    beforeEach(() => {
+        externalQueue = new ExternalQueue();
+        student1 = new Student(10, 2); // registrationTime = 10, tableTime = 2
+        student2 = new Student(15, 3); // registrationTime = 15, tableTime = 3
+    });
 
-  test('deve adicionar um estudante à fila externa', () => {
-    externalQueue.addStudent(student1);
-    expect(externalQueue['students'].length).toBe(1); // Acesso privado usando colchetes (não recomendado em produção)
-  });
+    it('should add a student to the queue', () => {
+        externalQueue.addStudent(student1);
+        expect(externalQueue.removeStudent()).toBe(student1);
+    });
 
-  test('deve remover um estudante da fila externa', () => {
-    externalQueue.addStudent(student1);
-    const removedStudent = externalQueue.removeStudent();
-    expect(removedStudent).toBe(student1);
-    expect(externalQueue['students'].length).toBe(0); // Acesso privado usando colchetes (não recomendado em produção)
-  });
+    it('should remove students in FIFO order', () => {
+        externalQueue.addStudent(student1);
+        externalQueue.addStudent(student2);
 
-  test('deve lançar um erro ao tentar remover estudante de uma fila vazia', () => {
-    expect(() => externalQueue.removeStudent()).toThrow(
-      "Não é possível remover estudantes de uma fila que está vazia."
-    );
-  });
+        expect(externalQueue.removeStudent()).toBe(student1); // Primeiro a entrar, primeiro a sair
+        expect(externalQueue.removeStudent()).toBe(student2); // Segundo a entrar, segundo a sair
+    });
 
-  test('deve manter a ordem FIFO (First In, First Out)', () => {
-    externalQueue.addStudent(student1);
-    externalQueue.addStudent(student2);
+    it('should throw an error when removing a student from an empty queue', () => {
+        expect(() => externalQueue.removeStudent()).toThrow("Não é possível remover estudantes de uma fila que está vazia.");
+    });
 
-    const firstRemoved = externalQueue.removeStudent();
-    const secondRemoved = externalQueue.removeStudent();
+    it('should handle multiple additions and removals correctly', () => {
+        externalQueue.addStudent(student1);
+        externalQueue.addStudent(student2);
 
-    expect(firstRemoved).toBe(student1);
-    expect(secondRemoved).toBe(student2);
-  });
+        expect(externalQueue.removeStudent()).toBe(student1); // Remove o primeiro estudante
+        externalQueue.addStudent(student1); // Adiciona outro estudante
+
+        expect(externalQueue.removeStudent()).toBe(student2); // Remove o segundo estudante
+        expect(externalQueue.removeStudent()).toBe(student1); // Remove o estudante adicionado novamente
+    });
 });

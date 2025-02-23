@@ -2,51 +2,52 @@ import { Table } from '@/domain/simulation-engine/system/table';
 import { Student } from '@/domain/simulation-engine/system/student';
 
 describe('Table', () => {
-  let table: Table;
-  let student1: Student;
-  let student2: Student;
+    let table: Table;
+    let student1: Student;
+    let student2: Student;
 
-  beforeEach(() => {
-    // Cria uma mesa com capacidade para 1 estudante
-    table = new Table(1);
+    beforeEach(() => {
+        table = new Table(2); // Limite de 2 estudantes na mesa
+        student1 = new Student(10, 2); // registrationTime = 10, tableTime = 2
+        student2 = new Student(15, 3); // registrationTime = 15, tableTime = 3
+    });
 
-    // Cria dois estudantes para os testes
-    student1 = new Student(10, 15, 2, 5); // arrivalMoment: 10, serviceMoment: 15, timeToType: 2, tableTime: 5
-    student2 = new Student(20, 25, 3, 6); // arrivalMoment: 20, serviceMoment: 25, timeToType: 3, tableTime: 6
-  });
+    it('should add a student to the table', () => {
+        table.addStudent(student1);
+        expect(table.checkManyStudentsAreInTable()).toBe(1);
+    });
 
-  test('deve adicionar um estudante à mesa', () => {
-    table.addStudent(student1);
-    expect(table['student'].length).toBe(1);
-  });
+    it('should throw an error when adding a student to a full table', () => {
+        table.addStudent(student1);
+        table.addStudent(student2);
+        expect(() => table.addStudent(student1)).toThrow("Não é possível adicionar um estudante no serviço porque todas as mesas estão ocupadas.");
+    });
 
-  test('deve lançar um erro ao tentar adicionar um estudante a uma mesa ocupada', () => {
-    table.addStudent(student1);
-    expect(() => table.addStudent(student2)).toThrow(
-      "Não é possível adicionar um estudante no serviço porque todas as mesas estão ocupadas."
-    );
-  });
+    it('should remove a student from the table', () => {
+        table.addStudent(student1);
+        const removedStudent = table.removeStudent();
+        expect(removedStudent).toBe(student1);
+        expect(table.checkManyStudentsAreInTable()).toBe(0);
+    });
 
-  test('deve remover um estudante da mesa', () => {
-    table.addStudent(student1);
-    const removedStudent = table.removeStudent();
-    expect(removedStudent).toBe(student1);
-    expect(table['student'].length).toBe(0);
-  });
+    it('should throw an error when removing a student from an empty table', () => {
+        expect(() => table.removeStudent()).toThrow("Não é possível remover estudantes de uma mesa que está vazia.");
+    });
 
-  test('deve lançar um erro ao tentar remover um estudante de uma mesa vazia', () => {
-    expect(() => table.removeStudent()).toThrow(
-      "Não é possível remover estudantes de uma mesa que está vazia."
-    );
-  });
+    it('should check if all tables are occupied', () => {
+        expect(table.checkIfAllTableIsOccupied()).toBe(false);
+        table.addStudent(student1);
+        table.addStudent(student2);
+        expect(table.checkIfAllTableIsOccupied()).toBe(true);
+    });
 
-  test('deve verificar se a mesa está ocupada', () => {
-    expect(table.checkIfTableIsOccupied()).toBe(false);
+    it('should get the table limit', () => {
+        expect(table.getTableLimit()).toBe(2);
+    });
 
-    table.addStudent(student1);
-    expect(table.checkIfTableIsOccupied()).toBe(true);
-
-    table.removeStudent();
-    expect(table.checkIfTableIsOccupied()).toBe(false);
-  });
+    it('should check how many students are in the table', () => {
+        expect(table.checkManyStudentsAreInTable()).toBe(0);
+        table.addStudent(student1);
+        expect(table.checkManyStudentsAreInTable()).toBe(1);
+    });
 });

@@ -2,171 +2,314 @@ import { Cafeteria } from "@/domain/simulation-engine/system/cafeteria";
 import { Student } from "@/domain/simulation-engine/system/student";
 
 describe('Cafeteria', () => {
-  let cafeteria: Cafeteria;
-  let estudante: Student;
+    let cafeteria: Cafeteria;
+    let student1: Student;
+    let student2: Student;
 
-  beforeEach(() => {
-    cafeteria = new Cafeteria(2, 5, 1); // limite: 2, tempo médio de atendimento: 5, quantidade de mesas: 1
-    estudante = new Student(1, 2, 3, 4); // arrivalMoment: 1, serviceMoment: 2, timeToType: 3, tableTime: 4
-  });
+    beforeEach(() => {
+        cafeteria = new Cafeteria(2, 1, 1); // internalQueueLimit = 2, turnstileLimit = 1, tableLimit = 1
+        student1 = new Student(10, 2); // registrationTime = 10, tableTime = 2
+        student2 = new Student(15, 3); // registrationTime = 15, tableTime = 3
+    });
 
-  // Teste para adicionar estudante à fila externa
-  test('deve adicionar um estudante à fila externa', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    expect(cafeteria.getInternalQueueSize()).toBe(0); // Verifica se a fila interna está vazia
-  });
+    // Testes para addStudentToExternalQueue
+    it('should add a student to the external queue', () => {
+        expect(cafeteria.addStudentToExternalQueue(student1)).toBe(true);
+    });
 
-  // Teste para mover estudante da fila externa para a catraca
-  test('deve mover um estudante da fila externa para a catraca', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    const resultado = cafeteria.moveStudentFromExternalQueueToTurnstile();
-    expect(resultado).toBeTruthy(); // Verifica se o movimento foi bem-sucedido
-  });
+    // Testes para moveStudentFromExternalQueueToTurnstile
+    it('should move a student from external queue to turnstile', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        expect(cafeteria.moveStudentFromExternalQueueToTurnstile()).toBe(true);
+    });
 
-  // Teste para lançar erro ao mover estudante para catraca ocupada
-  test('deve lançar erro ao mover estudante para catraca ocupada', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile(); // Ocupa a catraca
-    const outroEstudante = new Student(2, 3, 4, 5);
-    cafeteria.addStudentToExternalQueue(outroEstudante);
-    expect(() => cafeteria.moveStudentFromExternalQueueToTurnstile()).toThrow(
-      "Não é possível adicionar um estudante a uma catraca que já está ocupada."
-    );
-  });
+    it('should throw an error when moving a student to an occupied turnstile', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.addStudentToExternalQueue(student2);
+        expect(() => cafeteria.moveStudentFromExternalQueueToTurnstile()).toThrow("Não é possível adicionar um estudante a uma catraca que já está ocupada.");
+    });
 
-  // Teste para mover estudante da catraca para a fila interna
-  test('deve mover um estudante da catraca para a fila interna', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    const resultado = cafeteria.moveStudentFromTurnstileToInternalQueue();
-    expect(resultado).toBeTruthy(); // Verifica se o movimento foi bem-sucedido
-    expect(cafeteria.getInternalQueueSize()).toBe(1); // Verifica se a fila interna tem 1 estudante
-  });
+    it('should throw an error when moving a student to a locked turnstile', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.lockTheTurnstile();
+        expect(() => cafeteria.moveStudentFromExternalQueueToTurnstile()).toThrow("Não é possível adicionar um estudante a uma catraca que está trancada.");
+    });
 
-  // Teste para lançar erro ao mover estudante para fila interna cheia
-  test('deve lançar erro ao mover estudante para fila interna cheia', () => {
-    // Preenche a fila interna até o limite
-    for (let i = 0; i < 2; i++) {
-      const estudanteTemp = new Student(i, i + 1, i + 2, i + 3);
-      cafeteria.addStudentToExternalQueue(estudanteTemp);
-      cafeteria.moveStudentFromExternalQueueToTurnstile();
-      cafeteria.moveStudentFromTurnstileToInternalQueue();
-    }
+    // Testes para moveStudentFromTurnstileToInternalQueue
+    it('should move a student from turnstile to internal queue', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        expect(cafeteria.moveStudentFromTurnstileToInternalQueue()).toBe(true);
+    });
 
-    // Tenta adicionar mais um estudante à fila interna
-    const estudanteExtra = new Student(3, 4, 5, 6);
-    cafeteria.addStudentToExternalQueue(estudanteExtra);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    expect(() => cafeteria.moveStudentFromTurnstileToInternalQueue()).toThrow(
-      "Não é possível adicionar um estudante a uma fila interna que já está cheia."
-    );
-  });
+    it('should throw an error when moving a student to a full internal queue', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.addStudentToExternalQueue(student2);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        expect(() => cafeteria.moveStudentFromTurnstileToInternalQueue()).toThrow("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
+    });
 
-  // Teste para mover estudante da fila interna para o serviço
-  test('deve mover um estudante da fila interna para o serviço', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    cafeteria.moveStudentFromTurnstileToInternalQueue();
-    const resultado = cafeteria.moveStudentFromInternalQueueToService();
-    expect(resultado).toBeTruthy(); // Verifica se o movimento foi bem-sucedido
-  });
+    // Testes para moveStudentFromInternalQueueToService
+    it('should move a student from internal queue to service', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        expect(cafeteria.moveStudentFromInternalQueueToService()).toBe(true);
+    });
 
-  // Teste para lançar erro ao mover estudante para serviço ocupado
-  test('deve lançar erro ao mover estudante para serviço ocupado', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    cafeteria.moveStudentFromTurnstileToInternalQueue();
-    cafeteria.moveStudentFromInternalQueueToService(); // Ocupa o serviço
+    it('should throw an error when moving a student to an occupied service', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        cafeteria.addStudentToExternalQueue(student2);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        expect(() => cafeteria.moveStudentFromInternalQueueToService()).toThrow("Não é possível adicionar um estudante a um serviço que já está ocupado.");
+    });
 
-    const outroEstudante = new Student(2, 3, 4, 5);
-    cafeteria.addStudentToExternalQueue(outroEstudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    cafeteria.moveStudentFromTurnstileToInternalQueue();
-    expect(() => cafeteria.moveStudentFromInternalQueueToService()).toThrow(
-      "Não é possível adicionar um estudante a um serviço que já está ocupado."
-    );
-  });
+    it('should throw an error when moving a student to service with all tables occupied', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        cafeteria.moveStudentFromServiceToTable();
+        cafeteria.addStudentToExternalQueue(student2);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        expect(() => cafeteria.moveStudentFromInternalQueueToService()).toThrow("Não é possível adicionar estudantes a uma mesa que já está ocupada.");
+    });
 
-  // Teste para mover estudante do serviço para a mesa
-  test('deve mover um estudante do serviço para a mesa', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    cafeteria.moveStudentFromTurnstileToInternalQueue();
-    cafeteria.moveStudentFromInternalQueueToService();
-    const resultado = cafeteria.moveStudentFromServiceToTable();
-    expect(resultado).toBeTruthy(); // Verifica se o movimento foi bem-sucedido
-  });
+    // Testes para moveStudentFromServiceToTable
+    it('should move a student from service to table', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        expect(cafeteria.moveStudentFromServiceToTable()).toBe(true);
+    });
 
-  // Teste para remover estudante da cafeteria
-  test('deve remover um estudante da cafeteria', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    cafeteria.moveStudentFromTurnstileToInternalQueue();
-    cafeteria.moveStudentFromInternalQueueToService();
-    cafeteria.moveStudentFromServiceToTable();
-    const estudanteRemovido = cafeteria.removeStudentFromCafeteria();
-    expect(estudanteRemovido).toEqual(estudante); // Verifica se o estudante removido é o mesmo que foi adicionado
-  });
+    // Testes para removeStudentFromCafeteria
+    it('should remove a student from cafeteria', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        cafeteria.moveStudentFromServiceToTable();
+        expect(cafeteria.removeStudentFromCafeteria()).toBe(student1);
+    });
 
-  // Teste para obter o tamanho da fila interna
-  test('deve retornar o tamanho da fila interna', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    cafeteria.moveStudentFromTurnstileToInternalQueue();
-    const tamanhoFilaInterna = cafeteria.getInternalQueueSize();
-    expect(tamanhoFilaInterna).toBe(1); // Verifica se o tamanho da fila interna é 1
-  });
+    // Testes para hasSomeoneInService
+    it('should check if someone is in the service', () => {
+        expect(cafeteria.hasSomeoneInService()).toBe(false);
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        expect(cafeteria.hasSomeoneInService()).toBe(true);
+    });
 
-  // Teste para lançar erro ao mover estudante para serviço quando as mesas estão ocupadas
-  test('deve lançar erro ao mover estudante para serviço quando as mesas estão ocupadas', () => {
-    cafeteria.addStudentToExternalQueue(estudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    cafeteria.moveStudentFromTurnstileToInternalQueue();
-    cafeteria.moveStudentFromInternalQueueToService();
-    cafeteria.moveStudentFromServiceToTable(); // Ocupa a mesa
+    // Testes para serviceLockBecauseHasSomeone
+    it('should lock the service because someone is in it', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        expect(cafeteria.serviceLockBecauseHasSomeone()).toBe(true);
+    });
 
-    const outroEstudante = new Student(2, 3, 4, 5);
-    cafeteria.addStudentToExternalQueue(outroEstudante);
-    cafeteria.moveStudentFromExternalQueueToTurnstile();
-    cafeteria.moveStudentFromTurnstileToInternalQueue();
+    // Testes para checkServiceLocked
+    it('should check if the service is locked', () => {
+        expect(cafeteria.checkServiceLocked()).toBe(false);
+        cafeteria.lockTheService();
+        expect(cafeteria.checkServiceLocked()).toBe(true);
+    });
 
-    expect(() => cafeteria.moveStudentFromInternalQueueToService()).toThrow(
-      "Não é possível adicionar estudantes a uma mesa que já está ocupada."
-    );
-  });
+    // Testes para lockTheService
+    it('should lock the service', () => {
+        expect(cafeteria.lockTheService()).toBe(true);
+    });
 
-  // Teste para lançar erro ao tentar mover estudante da fila interna vazia
-  test('deve lançar erro ao tentar mover estudante da fila interna vazia', () => {
-    expect(() => cafeteria.moveStudentFromInternalQueueToService()).toThrow(
-      "Não é possível remover estudantes de uma fila que está vazia."
-    );
-  });
+    // Testes para unlockTheService
+    it('should unlock the service', () => {
+        cafeteria.lockTheService();
+        expect(cafeteria.unlockTheService()).toBe(true);
+    });
 
-  // Teste para verificar o comportamento quando a fila externa está vazia
-  test('deve lançar erro ao tentar mover estudante da fila externa vazia', () => {
-    expect(() => cafeteria.moveStudentFromExternalQueueToTurnstile()).toThrow(
-      "Não é possível remover estudantes de uma fila que está vazia."
-    );
-  });
+    // Testes para checkAllTablesAreOccupied
+    it('should check if all tables are occupied', () => {
+        expect(cafeteria.checkAllTablesAreOccupied()).toBe(false);
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        cafeteria.moveStudentFromServiceToTable();
+        expect(cafeteria.checkAllTablesAreOccupied()).toBe(true);
+    });
 
-  // Teste para verificar o comportamento quando a catraca está vazia
-  test('deve lançar erro ao tentar mover estudante da catraca vazia', () => {
-    expect(() => cafeteria.moveStudentFromTurnstileToInternalQueue()).toThrow(
-      "Não é possível remover um estudante de uma catraca que está vazia."
-    );
-  });
+    // Testes para hasTableAvaliable
+    it('should check if there is a table available', () => {
+        expect(cafeteria.hasTableAvaliable()).toBe(true);
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        cafeteria.moveStudentFromServiceToTable();
+        expect(cafeteria.hasTableAvaliable()).toBe(false);
+    });
 
-  // Teste para verificar o comportamento quando o serviço está vazio
-  test('deve lançar erro ao tentar mover estudante do serviço vazio', () => {
-    expect(() => cafeteria.moveStudentFromServiceToTable()).toThrow(
-      "Não é possível remover um estudante de um serviço que está vazio."
-    );
-  });
+    // Testes para serviceLockBecauseTableIsFull
+    it('should lock the service because all tables are occupied', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        cafeteria.moveStudentFromServiceToTable();
+        expect(cafeteria.serviceLockBecauseTableIsFull()).toBe(true);
+    });
 
-  // Teste para verificar o comportamento quando a mesa está vazia
-  test('deve lançar erro ao tentar remover estudante da mesa vazia', () => {
-    expect(() => cafeteria.removeStudentFromCafeteria()).toThrow(
-      "Não é possível remover estudantes de uma mesa que está vazia."
-    );
-  });
+    // Testes para serviceUnlockBecauseTableGotEmpty
+    it('should unlock the service because a table got empty', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        cafeteria.moveStudentFromServiceToTable();
+        cafeteria.removeStudentFromCafeteria();
+        expect(cafeteria.serviceUnlockBecauseTableGotEmpty()).toBe(true);
+    });
+
+    // Testes para hasSomeoneInTurnstile
+    it('should check if someone is in the turnstile', () => {
+        expect(cafeteria.hasSomeoneInTurnstile()).toBe(false);
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        expect(cafeteria.hasSomeoneInTurnstile()).toBe(true);
+    });
+
+    // Testes para checkTurnstileLocked
+    it('should check if the turnstile is locked', () => {
+        expect(cafeteria.checkTurnstileLocked()).toBe(false);
+        cafeteria.lockTheTurnstile();
+        expect(cafeteria.checkTurnstileLocked()).toBe(true);
+    });
+
+    // Testes para lockTheTurnstile
+    it('should lock the turnstile', () => {
+        expect(cafeteria.lockTheTurnstile()).toBe(true);
+    });
+
+    // Testes para unlockTheTurnstile
+    it('should unlock the turnstile', () => {
+        cafeteria.lockTheTurnstile();
+        expect(cafeteria.unlockTheTurnstile()).toBe(true);
+    });
+
+    // Testes para turnstileLockBecauseHasSomeone
+    it('should lock the turnstile because someone is in it', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        expect(cafeteria.turnstileLockBecauseHasSomeone()).toBe(true);
+    });
+
+    // Testes para turnstileUnlockBecauseHasNoOne
+    it('should unlock the turnstile because no one is in it', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        expect(cafeteria.turnstileUnlockBecauseHasNoOne()).toBe(true);
+    });
+
+    // Testes para turnstileUnlockBecauseTheQueueGotShorter
+    it('should unlock the turnstile because the internal queue got shorter', () => {
+        // Adiciona o primeiro estudante à fila externa
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+
+        // Adiciona o segundo estudante à fila externa
+        cafeteria.addStudentToExternalQueue(student2);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+
+        // Move o primeiro estudante da fila interna para o serviço
+        cafeteria.moveStudentFromInternalQueueToService();
+
+        // Move o primeiro estudante do serviço para a mesa
+        cafeteria.moveStudentFromServiceToTable();
+
+        // Remove o primeiro estudante da mesa
+        cafeteria.removeStudentFromCafeteria();
+
+        // Verifica se a catraca foi destravada
+        expect(cafeteria.turnstileUnlockBecauseTheQueueGotShorter()).toBe(true);
+    });
+
+    it('should return false when the internal queue did not get shorter', () => {
+        // Adiciona estudantes à fila externa
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.addStudentToExternalQueue(student2);
+    
+        // Move os estudantes para a catraca e fila interna
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+    
+        // Verifica se a fila interna não ficou mais curta
+        expect(cafeteria.checkInternalQueueGotShorter()).toBe(false);
+    });
+
+    // Testes para turnstileLockBecauseQueueIsFull
+    it('should lock the turnstile because the internal queue is full', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.addStudentToExternalQueue(student2);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        expect(cafeteria.turnstileLockBecauseQueueIsFull()).toBe(true);
+    });
+
+    // Testes para checkInternalQueueSize
+    it('should check the size of the internal queue', () => {
+        expect(cafeteria.checkInternalQueueSize()).toBe(0);
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        expect(cafeteria.checkInternalQueueSize()).toBe(1);
+    });
+
+    // Testes para checkInternalQueueGotShorter
+    it('should check if the internal queue got shorter', () => {
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.addStudentToExternalQueue(student2);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.moveStudentFromInternalQueueToService();
+        cafeteria.moveStudentFromServiceToTable(); // Adiciona o estudante à mesa
+        cafeteria.removeStudentFromCafeteria(); // Remove o estudante da mesa
+        expect(cafeteria.checkInternalQueueGotShorter()).toBe(true);
+    });
+
+
+    // Testes para checkInternalQueueLimitRecheadMaximum
+    it('should check if the internal queue limit is reached', () => {
+        expect(cafeteria.checkInternalQueueLimitRecheadMaximum()).toBe(false);
+        cafeteria.addStudentToExternalQueue(student1);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        cafeteria.addStudentToExternalQueue(student2);
+        cafeteria.moveStudentFromExternalQueueToTurnstile();
+        cafeteria.moveStudentFromTurnstileToInternalQueue();
+        expect(cafeteria.checkInternalQueueLimitRecheadMaximum()).toBe(true);
+    });
 });

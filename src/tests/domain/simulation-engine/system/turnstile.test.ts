@@ -2,58 +2,53 @@ import { Turnstile } from "@/domain/simulation-engine/system/turnstile";
 import { Student } from "@/domain/simulation-engine/system/student";
 
 describe('Turnstile', () => {
-  let turnstile: Turnstile;
-  let student: Student;
+    let turnstile: Turnstile;
+    let student: Student;
 
-  beforeEach(() => {
-    // Cria uma nova catraca e um estudante para cada teste
-    turnstile = new Turnstile();
-    student = new Student(10, 15, 2, 5); // arrivalMoment: 10, serviceMoment: 15, timeToType: 2, tableTime: 5
-  });
+    beforeEach(() => {
+        turnstile = new Turnstile(1); // Limite de 1 estudante por vez
+        student = new Student(10, 2); // registrationTime = 10, tableTime = 2
+    });
 
-  test('deve adicionar um estudante à catraca', () => {
-    turnstile.addStudent(student);
-    expect(turnstile.hasSomeone()).toBe(true);
-  });
+    it('should add a student to the turnstile', () => {
+        turnstile.addStudent(student);
+        expect(turnstile.hasSomeone()).toBe(true);
+    });
 
-  test('deve lançar um erro ao tentar adicionar um estudante a uma catraca ocupada', () => {
-    turnstile.addStudent(student);
-    expect(() => turnstile.addStudent(new Student(20, 25, 3, 6))).toThrow(
-      "Não é possível adicionar um estudante a uma catraca que já está ocupada."
-    );
-  });
+    it('should throw an error when adding a student to an occupied turnstile', () => {
+        turnstile.addStudent(student);
+        expect(() => turnstile.addStudent(student)).toThrow("Não é possível adicionar um estudante a uma catraca que já está ocupada.");
+    });
 
-  test('deve remover um estudante da catraca', () => {
-    turnstile.addStudent(student);
-    const removedStudent = turnstile.removeStudent();
-    expect(removedStudent).toBe(student);
-    expect(turnstile.hasSomeone()).toBe(false);
-  });
+    it('should remove a student from the turnstile', () => {
+        turnstile.addStudent(student);
+        const removedStudent = turnstile.removeStudent();
+        expect(removedStudent).toBe(student);
+        expect(turnstile.hasSomeone()).toBe(false);
+    });
 
-  test('deve lançar um erro ao tentar remover um estudante de uma catraca vazia', () => {
-    expect(() => turnstile.removeStudent()).toThrow(
-      "Não é possível remover um estudante de uma catraca que está vazia."
-    );
-  });
+    it('should throw an error when removing a student from an empty turnstile', () => {
+        expect(() => turnstile.removeStudent()).toThrow("Não é possível remover um estudante de uma catraca que está vazia.");
+    });
 
-  test('deve travar a catraca', () => {
-    turnstile.lock();
-    expect(turnstile['locked']).toBe(true); // Acesso privado usando colchetes (não recomendado em produção)
-  });
+    it('should lock the turnstile', () => {
+        turnstile.lock();
+        expect(turnstile.getLocked()).toBe(true);
+    });
 
-  test('deve destravar a catraca', () => {
-    turnstile.lock();
-    turnstile.unlock();
-    expect(turnstile['locked']).toBe(false); // Acesso privado usando colchetes (não recomendado em produção)
-  });
+    it('should unlock the turnstile', () => {
+        turnstile.lock();
+        turnstile.unlock();
+        expect(turnstile.getLocked()).toBe(false);
+    });
 
-  test('deve verificar se há alguém na catraca', () => {
-    expect(turnstile.hasSomeone()).toBe(false);
+    it('should check if someone is in the turnstile', () => {
+        expect(turnstile.hasSomeone()).toBe(false);
+        turnstile.addStudent(student);
+        expect(turnstile.hasSomeone()).toBe(true);
+    });
 
-    turnstile.addStudent(student);
-    expect(turnstile.hasSomeone()).toBe(true);
-
-    turnstile.removeStudent();
-    expect(turnstile.hasSomeone()).toBe(false);
-  });
+    it('should get the turnstile limit', () => {
+        expect(turnstile.getTurnstileLimit()).toBe(1);
+    });
 });
