@@ -1,41 +1,60 @@
 import { Student } from "@/domain/simulation-engine/system/student";
 
 describe('Student', () => {
-  let student: Student;
+    let student: Student;
 
-  beforeEach(() => {
-    // Cria um novo estudante para cada teste
-    student = new Student(10, 15, 2, 5); // arrivalMoment: 10, serviceMoment: 15, timeToType: 2, tableTime: 5
-  });
+    beforeEach(() => {
+        student = new Student(10, 20);
+    });
 
-  test('deve criar um estudante com os valores corretos', () => {
-    expect(student.getTimeToType()).toBe(2);
-    expect(student.getTableTime()).toBe(5);
-  });
+    it('should set and get arrivalMoment correctly', () => {
+        student.setArrivalMoment(100);
+        expect(student.getArrivalMoment()).toBe(100);
+    });
 
-  test('deve definir e obter o momento de chegada corretamente', () => {
-    student.setArrivalMoment(10);
-    expect(student.getArrivalMoment()).toBe(10);
-  });
+    it('should set and get serviceMoment correctly', () => {
+        student.setServiceMoment(200);
+        expect(student.getServiceMoment()).toBe(200);
+    });
 
-  test('deve lançar um erro ao tentar obter o momento de chegada não definido', () => {
-    expect(() => student.getArrivalMoment()).toThrow("O momento de chegada do estudante não foi definido.");
-  });
+    it('should set timeToServe correctly', () => {
+        student.setArrivalMoment(100);
+        student.setServiceMoment(200);
+        student.setTimeToServe();
+        expect(student.getTimeToServe()).toBe(100);
+    });
 
-  test('deve definir e obter o momento de atendimento corretamente', () => {
-    student.setServiceMoment(15);
-    expect(student.getServiceMoment()).toBe(15);
-  });
+    it('should throw error when calculating timeToServe without setting moments', () => {
+        expect(() => student.setTimeToServe()).toThrowError("Os momentos de chegada e atendimento devem ser definidos antes de calcular o tempo de atendimento.");
+    });
 
-  test('deve lançar um erro ao tentar obter o momento de atendimento não definido', () => {
-    expect(() => student.getServiceMoment()).toThrow("O momento de atendimento do estudante não foi definido.");
-  });
+    it('should get registrationTime correctly', () => {
+        expect(student.getRegistrationTime()).toBe(10);
+    });
 
-  test('deve retornar o tempo de digitação corretamente', () => {
-    expect(student.getTimeToType()).toBe(2);
-  });
+    it('should get tableTime correctly', () => {
+        expect(student.getTableTime()).toBe(20);
+    });
 
-  test('deve retornar o tempo de mesa corretamente', () => {
-    expect(student.getTableTime()).toBe(5);
-  });
+    it('should throw error when getting undefined arrivalMoment', () => {
+        expect(() => student.getArrivalMoment()).toThrowError("O momento de chegada do estudante não foi definido.");
+    });
+
+    it('should throw error when getting undefined serviceMoment', () => {
+        expect(() => student.getServiceMoment()).toThrowError("O momento de atendimento do estudante não foi definido.");
+    });
+
+    it('should throw error when getting undefined timeToServe', () => {
+        expect(() => student.getTimeToServe()).toThrowError("O tempo da chegada até o atendimento não foi definido.");
+    });
+
+    it('should throw error when getting undefined registrationTime', () => {
+        const newStudent = new Student(undefined as any, 20);
+        expect(() => newStudent.getRegistrationTime()).toThrowError("O momento de digitação do estudante não foi definido.");
+    });
+
+    it('should throw error when getting undefined tableTime', () => {
+        const newStudent = new Student(10, undefined as any);
+        expect(() => newStudent.getTableTime()).toThrowError("O momento de atendimento do estudante não foi definido.");
+    });
 });
