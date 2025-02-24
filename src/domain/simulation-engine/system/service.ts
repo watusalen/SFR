@@ -25,10 +25,16 @@ export class Service {
     }
 
     public lock(): void {
+        if (this.locked === true) {
+            throw new Error("Não é possível trancar um atendimento que já está trancado.");
+        }
         this.locked = true;
     }
 
     public unlock(): void {
+        if (this.locked === true) {
+            throw new Error("Não é possível destrancar um atendimento que já está destrancado.");
+        }
         this.locked = false;
     }
 
@@ -41,5 +47,9 @@ export class Service {
 
     public getLocked(): boolean {
         return this.locked;
+    }
+
+    public timeStenpInService(): number{
+        return this.student.getAttendedTime();
     }
 }
