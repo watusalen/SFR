@@ -22,8 +22,8 @@ export class GoingToHome extends Event {
         //Variáveis para controle e geração de novos Eventos
         const hasStudentsInInternalQueue: boolean = this.cafeteria.hasSomeoneInInternalQueue();
         const hasTableAvaliable : boolean = this.cafeteria.hasTableAvaliable();
-        console.log(`tem gente na fila interna? ${hasStudentsInInternalQueue}`);
-        console.log(`tem mesa? ${hasTableAvaliable}`);
+        // console.log(`tem gente na fila interna? ${hasStudentsInInternalQueue}`);
+        // console.log(`tem mesa? ${hasTableAvaliable}`);
 
         //Possíveis novos Eventos gerados a partir deste Evento
         if (hasStudentsInInternalQueue && hasTableAvaliable) {
@@ -37,10 +37,10 @@ export class GoingToHome extends Event {
         const hasSomeoneInExternalQueue: boolean = this.cafeteria.hasSomeoneInExternalQueue();
         const internalQueueGotShorter : boolean = this.cafeteria.checkInternalQueueGotShorter();
 
-        console.log(`catraca ta trancada? ${turnstileIsLocked}`);
-        console.log(`tem gente la fora? ${hasSomeoneInExternalQueue}`);
-        console.log(`a fila diminuiu? ${internalQueueGotShorter}`);
-
+        // console.log(`catraca ta trancada? ${turnstileIsLocked}`);
+        // console.log(`tem gente la fora? ${hasSomeoneInExternalQueue}`);
+        // console.log(`a fila diminuiu? ${internalQueueGotShorter}`);
+ 
         //Possíveis novos Eventos gerados a partir deste Evento
         if (turnstileIsLocked && hasSomeoneInExternalQueue && internalQueueGotShorter) {
             const scheduling3 : Event = new UnlockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
