@@ -11,10 +11,11 @@ export class UnlockTurnstile extends Event {
 
     processEvent(): void {
         console.log(`Evento - Catraca destrancada: ${this.getTimeStamp()}`);
+        console.log(`${this.cafeteria.checkInternalQueueSize()}`)
         this.cafeteria.unlockTheTurnstile();
 
-        if(this.cafeteria.hasSomeoneInExternalQueue()){
-            const scheduling : Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+        if (this.cafeteria.hasSomeoneInExternalQueue()) {
+            const scheduling: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
             this.machine.addEvent(scheduling);
         }
     }
