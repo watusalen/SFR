@@ -1,6 +1,7 @@
 import { Event } from "./event";
 import { EventMachine } from "./event-machine";
 import { Cafeteria } from "../system/cafeteria";
+import { GoingToTurnstile } from "./going-to-turnstile";
 
 export class UnlockTurnstile extends Event {
 
@@ -11,5 +12,10 @@ export class UnlockTurnstile extends Event {
     processEvent(): void {
         console.log(`Evento - Catraca destrancada: ${this.getTimeStamp()}`);
         this.cafeteria.unlockTheTurnstile();
+
+        if(this.cafeteria.hasSomeoneInExternalQueue()){
+            const scheduling : Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+            this.machine.addEvent(scheduling);
+        }
     }
 }

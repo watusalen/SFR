@@ -21,15 +21,21 @@ export class GoingToTurnstile extends Event {
         const timeStenpTyping: number = this.getTimeStamp() + timeToType;
 
         //Log
-        const verificador = this.cafeteria.hasSomeoneInTurnstile() ? "Sim" : "Não";
-        console.log(`Tem gente na catraca?: ${verificador}`);
+        // const verificador = this.cafeteria.hasSomeoneInTurnstile() ? "Sim" : "Não";
+        // console.log(`Tem gente na catraca?: ${verificador}`);
 
         //Variáveis para controle e geração de novos Eventos
+        // const internalQueueLimitRecheadMaximum : boolean = this.cafeteria.checkInternalQueueLimitRecheadMaximum();
+
+        // if(internalQueueLimitRecheadMaximum){
+        //     console.log("Fila interna cheia. Catraca bloqueada.");
+        //     const scheduling3 = new LockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+        //     this.machine.addEvent(scheduling3);
+        // }
 
         //Possíveis novos Eventos gerados a partir deste Evento
-        const scheduling1: Event = new LockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
-        const scheduling2: Event = new GoingToInternalQueue(timeStenpTyping, this.cafeteria, this.machine);
+        
+        const scheduling1: Event = new GoingToInternalQueue(timeStenpTyping, this.cafeteria, this.machine);
         this.machine.addEvent(scheduling1);
-        this.machine.addEvent(scheduling2);
     }
 }
