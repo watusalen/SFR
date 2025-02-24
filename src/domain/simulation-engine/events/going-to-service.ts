@@ -2,7 +2,7 @@ import { Cafeteria } from "../system/cafeteria";
 import { EventMachine } from "./event-machine";
 import { Event } from "./event";
 import { GoingToTable } from "./going-to-table";
-import { UnlockService } from "./unlock-service";
+import { LockService } from "./lock-service";
 
 export class GoingToService extends Event {
 
@@ -25,20 +25,10 @@ export class GoingToService extends Event {
         const timeToBeServed: number = this.cafeteria.timeStenpInService();
         const totalTimeToBeServed: number = this.getTimeStamp() + timeToBeServed;
 
-        //Variáveis para controle e geração de novos Eventos
-        const serviceIsLocked: boolean = this.cafeteria.checkServiceLocked();
-        const hasStudentsInInternalQueue: boolean = this.cafeteria.hasSomeoneInInternalQueue();
-        const hasTableAvaliable: boolean = this.cafeteria.hasTableAvaliable();
-
         //Possíveis novos Eventos gerados a partir deste Evento
-        const scheduling1: Event = new GoingToTable(totalTimeToBeServed, this.cafeteria, this.machine);
+        const scheduling1 : Event = new LockService(this.getTimeStamp(), this.cafeteria, this.machine);
+        const scheduling2: Event = new GoingToTable(totalTimeToBeServed, this.cafeteria, this.machine);
         this.machine.addEvent(scheduling1);
-
-        if (serviceIsLocked && hasStudentsInInternalQueue && hasTableAvaliable) {
-            const scheduling2 : Event = new UnlockService(totalTimeToBeServed, this.cafeteria, this.machine);
-            const scheduling3 : Event = new GoingToService(totalTimeToBeServed, this.cafeteria, this.machine);
-            this.machine.addEvent(scheduling2);
-            this.machine.addEvent(scheduling3);
-        }
+        this.machine.addEvent(scheduling2);
     }
 }
