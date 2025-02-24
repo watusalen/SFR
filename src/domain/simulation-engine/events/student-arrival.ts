@@ -2,7 +2,7 @@ import { Cafeteria } from "../system/cafeteria";
 import { Student } from "../system/student";
 import { EventMachine } from "./event-machine";
 import { Event } from "./event";
-import { TurnstileTransition } from "./going-to-turnstile";
+import { GoingToTurnstile } from "./going-to-turnstile";
 
 export class StudentArrival extends Event {
     private student: Student;
@@ -13,17 +13,20 @@ export class StudentArrival extends Event {
     }
 
     processEvent(): void {
-
+        //Log
         console.log(`Evento - Chegada do estudante: ${this.getTimeStamp()}`);
 
-        const someoneInTurnstile: boolean = this.cafeteria.hasSomeoneInTurnstile();
+        //Alteração do estado do Sistema
+        this.cafeteria.addStudentToExternalQueue(this.student);
+        console.log(`Quantidade de Alunos na Fila Externa: ${this.cafeteria.getStudents()}`);
+        //Variáveis para controle de geração de novos Eventos
+        const hasSomeoneInTurnstile: boolean = this.cafeteria.hasSomeoneInTurnstile();
         const checkTunstileLocked: boolean = this.cafeteria.checkTurnstileLocked();
-        const sucess: boolean = this.cafeteria.addStudentToExternalQueue(this.student);
 
-        if (sucess && !someoneInTurnstile && !checkTunstileLocked) {
-            const scheduling: Event = new TurnstileTransition(this.getTimeStamp(), this.cafeteria, this.machine, this.student);
+        //Possíveis novos Eventos gerados a partir deste Evento
+        if (!hasSomeoneInTurnstile && !checkTunstileLocked) {
+            const scheduling: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
             this.machine.addEvent(scheduling);
         }
-
     }
 }

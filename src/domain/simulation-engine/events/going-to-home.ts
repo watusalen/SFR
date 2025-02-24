@@ -1,21 +1,23 @@
 import { Cafeteria } from "../system/cafeteria";
-import { Student } from "../system/student";
 import { EventMachine } from "./event-machine";
 import { Event } from "./event";
 
 export class GoingToHome extends Event {
-    private student: Student;
 
-    constructor(timestamp: number, cafeteria: Cafeteria, machine: EventMachine, student: Student) {
+    constructor(timestamp: number, cafeteria: Cafeteria, machine: EventMachine) {
         super(timestamp, cafeteria, machine);
-        this.student = student;
     }
 
     processEvent(): void {
+        //Log
 
-        console.log(`Evento - Transição da Mesa para Casa: ${this.getTimeStamp()}`)
+        console.log(`Evento - Transição da Mesa para Casa: ${this.getTimeStamp()}`);
+        //Alteração do estado do Sistema
+        this.cafeteria.removeStudentFromCafeteria();
+        console.log(`Quantidade de Alunos nas Mesas: ${this.cafeteria.checkStudentsInTable()}`);
+        //Variáveis para controle e geração de novos Eventos
 
-        const sucess = this.cafeteria.removeStudentFromCafeteria();
+        //Possíveis novos Eventos gerados a partir deste Evento
 
     }
 }

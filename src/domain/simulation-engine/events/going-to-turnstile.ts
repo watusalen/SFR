@@ -2,26 +2,28 @@ import { Cafeteria } from "../system/cafeteria";
 import { Student } from "../system/student";
 import { EventMachine } from "./event-machine";
 import { Event } from "./event";
-import { InternalQueueTransition } from "./going-to-internal-queue";
+import { GoingToInternalQueue } from "./going-to-internal-queue";
 
-export class TurnstileTransition extends Event {
-    private student: Student;
+export class GoingToTurnstile extends Event {
 
-    constructor(timestamp: number, cafeteria: Cafeteria, machine: EventMachine, student: Student) {
+    constructor(timestamp: number, cafeteria: Cafeteria, machine: EventMachine) {
         super(timestamp, cafeteria, machine);
-        this.student = student;
     }
 
     processEvent(): void {
-
+        //Log
         console.log(`Evento - Transição da Fila Externa para a Catraca: ${this.getTimeStamp()}`)
 
-        const sucess = this.cafeteria.moveStudentFromExternalQueueToTurnstile();
+        //Alteração do estado do Sistema
+        const timeToType: number = this.cafeteria.moveStudentFromExternalQueueToTurnstile();
+        const timeStenpTyping: number = this.getTimeStamp() + timeToType;
 
-        if (sucess) {
-            const scheduling : Event = new InternalQueueTransition(this.getTimeStamp(), this.cafeteria, this.machine, this.student);
-            this.machine.addEvent(scheduling);
-        }
+        const verificador = this.cafeteria.hasSomeoneInTurnstile() ? "Sim" : "Não";
+        console.log(`Tem gente na catraca?: ${verificador}`);
+        //Variáveis para controle e geração de novos Eventos
 
+        //Possíveis novos Eventos gerados a partir deste Evento
+        const scheduling: Event = new GoingToInternalQueue(timeStenpTyping, this.cafeteria, this.machine);
+        this.machine.addEvent(scheduling);
     }
 }
