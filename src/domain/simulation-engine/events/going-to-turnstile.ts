@@ -3,6 +3,8 @@ import { Student } from "../system/student";
 import { EventMachine } from "./event-machine";
 import { Event } from "./event";
 import { GoingToInternalQueue } from "./going-to-internal-queue";
+import { UnlockTurnstile } from "./unlock-turnstile";
+import { LockTurnstile } from "./lock-turnstile";
 
 export class GoingToTurnstile extends Event {
 
@@ -25,7 +27,9 @@ export class GoingToTurnstile extends Event {
         //Variáveis para controle e geração de novos Eventos
 
         //Possíveis novos Eventos gerados a partir deste Evento
-        const scheduling: Event = new GoingToInternalQueue(timeStenpTyping, this.cafeteria, this.machine);
-        this.machine.addEvent(scheduling);
+        const scheduling1: Event = new GoingToInternalQueue(timeStenpTyping, this.cafeteria, this.machine);
+        const scheduling2: Event = new LockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+        this.machine.addEvent(scheduling1);
+        this.machine.addEvent(scheduling2);
     }
 }
