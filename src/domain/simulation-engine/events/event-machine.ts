@@ -17,7 +17,7 @@ export class EventMachine {
         }
     }
 
-    public addEvent(event:Event): void {
+    public addEvent(event: Event): void {
         this.eventQueue.push(event);
     }
 

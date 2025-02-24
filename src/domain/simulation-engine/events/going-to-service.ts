@@ -18,15 +18,15 @@ export class GoingToService extends Event {
         this.cafeteria.moveStudentFromInternalQueueToService();
 
         //Log
-        const verificador = this.cafeteria.hasSomeoneInService() ? "Sim" : "Não";
-        console.log(`Tem alguém no Atendimento?: ${verificador}`);
+        const verification = this.cafeteria.hasSomeoneInService() ? "Sim" : "Não";
+        console.log(`Tem alguém no Atendimento?: ${verification}`);
 
         //Variáveis para controle e geração de novos Eventos
         const timeToBeServed: number = this.cafeteria.timeStenpInService();
         const totalTimeToBeServed: number = this.getTimeStamp() + timeToBeServed;
 
         //Possíveis novos Eventos gerados a partir deste Evento
-        const scheduling1 : Event = new LockService(this.getTimeStamp(), this.cafeteria, this.machine);
+        const scheduling1: Event = new LockService(this.getTimeStamp(), this.cafeteria, this.machine);
         const scheduling2: Event = new GoingToTable(totalTimeToBeServed, this.cafeteria, this.machine);
         this.machine.addEvent(scheduling1);
         this.machine.addEvent(scheduling2);

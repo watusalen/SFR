@@ -183,10 +183,8 @@ export class Cafeteria {
     }
 
     public checkInternalQueueGotShorter(): boolean {
-        if (this.checkInternalQueueSize() === (this.internalQueue.getInternalQueueLimit() - this.turnstile.getTurnstileLimit())) {
-            return true;
-        }
-        return false;
+        const minimumCapacity = this.internalQueue.getInternalQueueLimit() - this.turnstile.getTurnstileLimit();
+        return this.checkInternalQueueSize() <= minimumCapacity;
     }
 
     public checkInternalQueueLimitRecheadMaximum(): boolean {
