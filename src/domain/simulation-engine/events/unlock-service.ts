@@ -2,7 +2,7 @@ import { Event } from "./event";
 import { EventMachine } from "./event-machine";
 import { Cafeteria } from "../system/cafeteria";
 
-export class UnlockTurnstile extends Event {
+export class UnlockService extends Event {
 
     constructor(timestamp: number, cafeteria: Cafeteria, machine: EventMachine) {
         super(timestamp, cafeteria, machine);
@@ -10,11 +10,6 @@ export class UnlockTurnstile extends Event {
 
     processEvent(): void {
         console.log(`Evento - Atendimento destrancado: ${this.getTimeStamp()}`);
-
-        const sucess: boolean = this.cafeteria.unlockTheService();
-
-        if (sucess) {
-            console.log(`Atendimento destrancado com sucesso: ${this.getTimeStamp()}`);
-        }
+        this.cafeteria.unlockTheService();
     }
 }

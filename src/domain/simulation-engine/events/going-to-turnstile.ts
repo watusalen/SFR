@@ -18,8 +18,10 @@ export class GoingToTurnstile extends Event {
         const timeToType: number = this.cafeteria.moveStudentFromExternalQueueToTurnstile();
         const timeStenpTyping: number = this.getTimeStamp() + timeToType;
 
+        //Log
         const verificador = this.cafeteria.hasSomeoneInTurnstile() ? "Sim" : "Não";
         console.log(`Tem gente na catraca?: ${verificador}`);
+
         //Variáveis para controle e geração de novos Eventos
 
         //Possíveis novos Eventos gerados a partir deste Evento

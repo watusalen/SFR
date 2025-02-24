@@ -200,4 +200,18 @@ export class Cafeteria {
     public getStudents(): number {
         return this.externalQueue.getStudent();
     }
+
+    public hasSomeoneInExternalQueue(): boolean{
+        if(this.externalQueue.getStudent() > 0){
+            return true;
+        }
+        return false;
+    }
+
+    public hasSomeoneInInternalQueue():boolean {
+        if(this.internalQueue.checkSizeOfQueue() > 0){
+            return true;
+        }
+        return false;
+    }
 }

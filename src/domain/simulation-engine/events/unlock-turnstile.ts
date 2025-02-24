@@ -10,11 +10,6 @@ export class UnlockTurnstile extends Event {
 
     processEvent(): void {
         console.log(`Evento - Catraca destrancada: ${this.getTimeStamp()}`);
-
-        const sucess: boolean = this.cafeteria.unlockTheTurnstile();
-
-        if (sucess) {
-            console.log(`Catraca destrancada com sucesso: ${this.getTimeStamp()}`);
-        }
+        this.cafeteria.unlockTheTurnstile();
     }
 }
