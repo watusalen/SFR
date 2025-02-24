@@ -25,11 +25,7 @@ export class Cafeteria {
         return true;
     }
 
-    public moveStudentFromExternalQueueToTurnstile(): boolean {
-        if (this.checkInternalQueueLimitRecheadMaximum()) {
-            this.turnstileLockBecauseQueueIsFull();
-            return false;
-        }
+    public moveStudentFromExternalQueueToTurnstile(): number {
         if (this.turnstile.hasSomeone()) {
             throw new Error("Não é possível adicionar um estudante a uma catraca que já está ocupada.");
         }
@@ -38,27 +34,16 @@ export class Cafeteria {
         }
         const student: Student = this.externalQueue.removeStudent();
         this.turnstile.addStudent(student);
-        this.turnstileLockBecauseHasSomeone();
-        return true;
+        return student.getRegistrationTime();
     }
 
     public moveStudentFromTurnstileToInternalQueue(): boolean {
-        if (this.internalQueue.checkInternalQueueLimitRecheadMaximum()) {
-            throw new Error("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
-        }
         const student: Student = this.turnstile.removeStudent();
         this.internalQueue.addStudent(student);
-        if (!this.checkInternalQueueLimitRecheadMaximum()) {
-            this.turnstileUnlockBecauseHasNoOne();
-        }
         return true;
     }
 
     public moveStudentFromInternalQueueToService(): boolean {
-        if (this.checkAllTablesAreOccupied()) {
-            this.serviceLockBecauseTableIsFull();
-            return false;
-        }
         if (this.service.hasSomeone()) {
             throw new Error("Não é possível adicionar um estudante a um serviço que já está ocupado.");
         }
@@ -67,25 +52,16 @@ export class Cafeteria {
         }
         const student: Student = this.internalQueue.removeStudent();
         this.service.addStudent(student);
-        this.serviceLockBecauseHasSomeone();
         return true;
     }
 
     public moveStudentFromServiceToTable(): boolean {
         const student: Student = this.service.removeStudent();
         this.table.addStudent(student);
-        if (this.hasTableAvaliable()) {
-            this.serviceUnlockBecauseTableGotEmpty();
-        }
         return true;
     }
 
     public removeStudentFromCafeteria(): Student {
-        if (this.checkTurnstileLocked()) {
-            if (this.checkInternalQueueGotShorter()) {
-                this.turnstileUnlockBecauseTheQueueGotShorter();
-            }
-        }
         return this.table.removeStudent();
     }
 
