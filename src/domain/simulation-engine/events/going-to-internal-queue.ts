@@ -5,6 +5,7 @@ import { GoingToService } from "./going-to-service";
 import { GoingToTurnstile } from "./going-to-turnstile";
 import { UnlockTurnstile } from "./unlock-turnstile";
 import { LockService } from "./lock-service";
+import { LockTurnstile } from "./lock-turnstile";
 
 export class GoingToInternalQueue extends Event {
 
@@ -24,17 +25,17 @@ export class GoingToInternalQueue extends Event {
 
         //Variáveis para controle e geração de novos Eventos
         const turnstileIsLocked: boolean = this.cafeteria.checkTurnstileLocked();
-        const hasSomeoneInExternalQueue: boolean = this.cafeteria.hasSomeoneInExternalQueue();
+        const internalQueueLimitRecheadMaximum: boolean = this.cafeteria.checkInternalQueueLimitRecheadMaximum();
 
         //Variáveis para controle e geração de novos Eventos
         const hasSomeoneInService: boolean = this.cafeteria.hasSomeoneInService();
         const serviceIsLocked: boolean = this.cafeteria.checkServiceLocked();
-        const internalQueueLimitRecheadMaximum: boolean = this.cafeteria.checkInternalQueueLimitRecheadMaximum();
 
         //Possíveis novos Eventos gerados a partir deste Evento
-        if (turnstileIsLocked && hasSomeoneInExternalQueue && !internalQueueLimitRecheadMaximum) {
+        if (turnstileIsLocked && !internalQueueLimitRecheadMaximum) {
             const scheduling3: Event = new UnlockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
             const scheduling4: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+            const scheduling5: Event = new LockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);            
             this.machine.addEvent(scheduling3);
             this.machine.addEvent(scheduling4);
         }
