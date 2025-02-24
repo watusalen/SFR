@@ -24,19 +24,21 @@ export class GoingToInternalQueue extends Event {
         //Variáveis para controle e geração de novos Eventos
         const hasSomeoneInService: boolean = this.cafeteria.hasSomeoneInService();
         const serviceIsLocked: boolean = this.cafeteria.checkServiceLocked();
+        const hasTableAvaliable: boolean = this.cafeteria.hasTableAvaliable();
 
         //Possíveis novos Eventos gerados a partir deste Evento
-        if (!hasSomeoneInService && !serviceIsLocked) {
+        if (!hasSomeoneInService && !serviceIsLocked && hasTableAvaliable) {
             const scheduling1: Event = new GoingToService(this.getTimeStamp(), this.cafeteria, this.machine);
             this.machine.addEvent(scheduling1);
         }
 
         //Variáveis para controle e geração de novos Eventos
         const turnstileIsLocked: boolean = this.cafeteria.checkTurnstileLocked();
+        const hasSomeoneInExternalQueue : boolean = this.cafeteria.hasSomeoneInExternalQueue();
         const internalQueueLimitRecheadMaximum: boolean = this.cafeteria.checkInternalQueueLimitRecheadMaximum();
 
         //Possíveis novos Eventos gerados a partir deste Evento
-        if (turnstileIsLocked && !internalQueueLimitRecheadMaximum) {
+        if (turnstileIsLocked && hasSomeoneInExternalQueue && !internalQueueLimitRecheadMaximum) {
             const scheduling3: Event = new UnlockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
             const scheduling4: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);          
             this.machine.addEvent(scheduling3);
