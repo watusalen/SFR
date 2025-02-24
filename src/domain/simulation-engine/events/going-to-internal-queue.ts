@@ -4,6 +4,7 @@ import { Event } from "./event";
 import { GoingToService } from "./going-to-service";
 import { GoingToTurnstile } from "./going-to-turnstile";
 import { UnlockTurnstile } from "./unlock-turnstile";
+import { LockTurnstile } from "./lock-turnstile";
 
 export class GoingToInternalQueue extends Event {
 
@@ -32,17 +33,31 @@ export class GoingToInternalQueue extends Event {
             this.machine.addEvent(scheduling1);
         }
 
-        //Variáveis para controle e geração de novos Eventos
-        const turnstileIsLocked: boolean = this.cafeteria.checkTurnstileLocked();
-        const hasSomeoneInExternalQueue : boolean = this.cafeteria.hasSomeoneInExternalQueue();
-        const internalQueueLimitRecheadMaximum: boolean = this.cafeteria.checkInternalQueueLimitRecheadMaximum();
+        const internalQueueLimitRecheadMaximum: boolean = this.cafeteria.checkInternalQueueLimitRecheadMaximum()
 
-        //Possíveis novos Eventos gerados a partir deste Evento
-        if (turnstileIsLocked && hasSomeoneInExternalQueue && !internalQueueLimitRecheadMaximum) {
-            const scheduling3: Event = new UnlockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
-            const scheduling4: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);          
-            this.machine.addEvent(scheduling3);
-            this.machine.addEvent(scheduling4);
+        if (internalQueueLimitRecheadMaximum) {
+            console.log("Fila interna cheia. Catraca bloqueada.");
+            const scheduling2 = new LockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+            this.machine.addEvent(scheduling2);
         }
+
+        const hasSomeoneInExternalQueue : boolean = this.cafeteria.hasSomeoneInExternalQueue();
+        const turnstileIsLocked : boolean = this.cafeteria.checkTurnstileLocked();
+
+        if (hasSomeoneInExternalQueue && !turnstileIsLocked && !internalQueueLimitRecheadMaximum) {
+            const scheduling3 = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+            this.machine.addEvent(scheduling3);
+        }
+
+        //Variáveis para controle e geração de novos Eventos
+        // const turnstileIsLocked: boolean = this.cafeteria.checkTurnstileLocked();
+        // const hasSomeoneInExternalQueue : boolean = this.cafeteria.hasSomeoneInExternalQueue();
+        // const internalQueueLimitRecheadMaximum: boolean = this.cafeteria.checkInternalQueueLimitRecheadMaximum();
+
+        // //Possíveis novos Eventos gerados a partir deste Evento
+        // if (turnstileIsLocked && hasSomeoneInExternalQueue && !internalQueueLimitRecheadMaximum) {
+        //     const scheduling2: Event = new UnlockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);        
+        //     this.machine.addEvent(scheduling2);
+        // }
     }
 }
