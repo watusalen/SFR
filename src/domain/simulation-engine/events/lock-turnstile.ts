@@ -10,11 +10,6 @@ export class LockTurnstile extends Event {
 
     processEvent(): void {
         console.log(`Evento - Catraca trancada: ${this.getTimeStamp()}`);
-
-        const sucess: boolean = this.cafeteria.lockTheTurnstile();
-
-        if (sucess) {
-            console.log(`Catraca trancada com sucesso: ${this.getTimeStamp()}`);
-        }
+        this.cafeteria.lockTheTurnstile();
     }
 }

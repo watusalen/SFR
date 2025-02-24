@@ -18,15 +18,18 @@ export class StudentArrival extends Event {
 
         //Alteração do estado do Sistema
         this.cafeteria.addStudentToExternalQueue(this.student);
+
+        //Log
         console.log(`Quantidade de Alunos na Fila Externa: ${this.cafeteria.getStudents()}`);
+
         //Variáveis para controle de geração de novos Eventos
         const hasSomeoneInTurnstile: boolean = this.cafeteria.hasSomeoneInTurnstile();
         const checkTunstileLocked: boolean = this.cafeteria.checkTurnstileLocked();
 
         //Possíveis novos Eventos gerados a partir deste Evento
         if (!hasSomeoneInTurnstile && !checkTunstileLocked) {
-            const scheduling: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
-            this.machine.addEvent(scheduling);
+            const scheduling1: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+            this.machine.addEvent(scheduling1);
         }
     }
 }
