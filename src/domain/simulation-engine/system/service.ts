@@ -32,7 +32,7 @@ export class Service {
     }
 
     public unlock(): void {
-        if (this.locked === true) {
+        if (this.locked === false) {
             throw new Error("Não é possível destrancar um atendimento que já está destrancado.");
         }
         this.locked = false;
