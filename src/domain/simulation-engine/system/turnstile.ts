@@ -21,16 +21,22 @@ export class Turnstile {
         if (!this.student) {
             throw new Error("Não é possível remover um estudante de uma catraca que está vazia.");
         }
-        const student = this.student;
+        const student: Student | undefined = this.student;
         this.student = undefined;
         return student;
     }
 
     public lock(): void {
+        if (this.locked === true) {
+            throw new Error("Não é possível trancar uma catraca que já está trancada.");
+        }
         this.locked = true;
     }
 
     public unlock(): void {
+        if (this.locked === false) {
+            throw new Error("Não é possível destrancar uma catraca que já está destrancada.");
+        }
         this.locked = false;
     }
 
@@ -42,6 +48,9 @@ export class Turnstile {
     }
 
     public getTurnstileLimit(): number {
+        if (!this.turnstileLimit) {
+            throw new Error("O limite de pessoas para liberar a catraca ainda não foi definido.");
+        }
         return this.turnstileLimit;
     }
 

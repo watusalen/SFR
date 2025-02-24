@@ -55,10 +55,21 @@ export class Cafeteria {
         return true;
     }
 
-    public moveStudentFromServiceToTable(): boolean {
+    public moveStudentFromServiceToTable(): number {
+        if (!this.service.hasSomeone()) {
+            throw new Error("Não há estudantes no serviço para mover para a mesa.");
+        }
+        if (this.table.checkIfAllTableIsOccupied()) {
+            throw new Error("Não é possível adicionar estudantes a uma mesa que já está ocupada.");
+        }
         const student: Student = this.service.removeStudent();
+        const timeStenpInTable : number = student.getTableTime();
         this.table.addStudent(student);
-        return true;
+        return timeStenpInTable;
+    }
+
+    public timeStenpInService(): number {
+        return this.service.timeStenpInService();
     }
 
     public removeStudentFromCafeteria(): Student {
@@ -180,5 +191,13 @@ export class Cafeteria {
 
     public checkInternalQueueLimitRecheadMaximum(): boolean {
         return this.internalQueue.checkInternalQueueLimitRecheadMaximum();
+    }
+
+    public checkStudentsInTable(): number {
+        return this.table.checkManyStudentsAreInTable();
+    }
+
+    public getStudents(): number {
+        return this.externalQueue.getStudent();
     }
 }

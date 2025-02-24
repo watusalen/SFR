@@ -17,4 +17,8 @@ export class ExternalQueue {
         }
         return this.students.shift()!;
     }
+
+    public getStudent():number{
+        return this.students.length;
+    }
 }
