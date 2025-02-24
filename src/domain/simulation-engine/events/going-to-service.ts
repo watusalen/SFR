@@ -1,27 +1,31 @@
 import { Cafeteria } from "../system/cafeteria";
-import { Student } from "../system/student";
 import { EventMachine } from "./event-machine";
 import { Event } from "./event";
 import { GoingToTable } from "./going-to-table";
 
 export class GoingToService extends Event {
-    private student: Student;
 
-    constructor(timestamp: number, cafeteria: Cafeteria, machine: EventMachine, student: Student) {
+    constructor(timestamp: number, cafeteria: Cafeteria, machine: EventMachine) {
         super(timestamp, cafeteria, machine);
-        this.student = student;
     }
 
     processEvent(): void {
+        //Log
+        console.log(`Evento - Transição da Fila Interna para o Atendimento: ${this.getTimeStamp()}`);
 
-        console.log(`Evento - Transição da Fila Interna para o Atendimento: ${this.getTimeStamp()}`)
+        //Alteração do estado do Sistema
+        this.cafeteria.moveStudentFromInternalQueueToService();
 
-        const sucess = this.cafeteria.moveStudentFromInternalQueueToService();
-        
-        if(sucess){
-            const scheduling : Event = new GoingToTable(this.getTimeStamp(), this.cafeteria, this.machine, this.student);
-            this.machine.addEvent(scheduling);
-        }
+        const verificador = this.cafeteria.hasSomeoneInService() ? "Sim" : "Não";
 
+        console.log(`Tem alguém no Atendimento?: ${verificador}`);
+
+        //Variáveis para controle e geração de novos Eventos
+        const timeToBeServed: number = this.cafeteria.timeStenpInService();
+        const totalTimeToBeServed: number = this.getTimeStamp() + timeToBeServed;
+
+        //Possíveis novos Eventos gerados a partir deste Evento
+        const scheduling: Event = new GoingToTable(totalTimeToBeServed, this.cafeteria, this.machine);
+        this.machine.addEvent(scheduling);
     }
 }
