@@ -56,7 +56,7 @@ export class Cafeteria {
     }
 
     public moveStudentFromServiceToTable(): Student {
-        if (!this.hasSomeoneInService) {
+        if (!this.hasSomeoneInService()) {
             throw new Error("Não há estudantes no serviço para mover para a mesa.");
         }
         if (!this.hasTableAvaliable()) {

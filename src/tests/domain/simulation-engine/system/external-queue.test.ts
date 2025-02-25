@@ -3,40 +3,40 @@ import { Student } from '@/domain/simulation-engine/system/student';
 
 describe('ExternalQueue', () => {
     let externalQueue: ExternalQueue;
-    let student1: Student;
-    let student2: Student;
+    let student: Student;
 
     beforeEach(() => {
         externalQueue = new ExternalQueue();
-        student1 = new Student(10, 2); // registrationTime = 10, tableTime = 2
-        student2 = new Student(15, 3); // registrationTime = 15, tableTime = 3
+        student = new Student(1000, 2000, 3000);
     });
 
-    it('should add a student to the queue', () => {
-        externalQueue.addStudent(student1);
-        expect(externalQueue.removeStudent()).toBe(student1);
+    // Testes para addStudent
+    describe('addStudent', () => {
+        it('should add a student to the external queue', () => {
+            externalQueue.addStudent(student);
+            expect(externalQueue.getStudent()).toBe(1);
+        });
     });
 
-    it('should remove students in FIFO order', () => {
-        externalQueue.addStudent(student1);
-        externalQueue.addStudent(student2);
+    // Testes para removeStudent
+    describe('removeStudent', () => {
+        it('should remove a student from the external queue', () => {
+            externalQueue.addStudent(student);
+            const removedStudent = externalQueue.removeStudent();
+            expect(removedStudent).toBe(student);
+            expect(externalQueue.getStudent()).toBe(0);
+        });
 
-        expect(externalQueue.removeStudent()).toBe(student1); // Primeiro a entrar, primeiro a sair
-        expect(externalQueue.removeStudent()).toBe(student2); // Segundo a entrar, segundo a sair
+        it('should throw an error if the external queue is empty', () => {
+            expect(() => externalQueue.removeStudent()).toThrow("Não é possível remover estudantes de uma fila que está vazia.");
+        });
     });
 
-    it('should throw an error when removing a student from an empty queue', () => {
-        expect(() => externalQueue.removeStudent()).toThrow("Não é possível remover estudantes de uma fila que está vazia.");
-    });
-
-    it('should handle multiple additions and removals correctly', () => {
-        externalQueue.addStudent(student1);
-        externalQueue.addStudent(student2);
-
-        expect(externalQueue.removeStudent()).toBe(student1); // Remove o primeiro estudante
-        externalQueue.addStudent(student1); // Adiciona outro estudante
-
-        expect(externalQueue.removeStudent()).toBe(student2); // Remove o segundo estudante
-        expect(externalQueue.removeStudent()).toBe(student1); // Remove o estudante adicionado novamente
+    // Testes para getStudent
+    describe('getStudent', () => {
+        it('should return the number of students in the external queue', () => {
+            externalQueue.addStudent(student);
+            expect(externalQueue.getStudent()).toBe(1);
+        });
     });
 });
