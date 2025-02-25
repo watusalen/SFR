@@ -13,12 +13,15 @@ export class GoingToTurnstile extends Event {
         //Log
         console.log(`Evento - Transição da Fila Externa para a Catraca: ${this.getTimeStamp()}`)
 
-        //Alteração do estado do Sistema
-        const timeToType: number = this.cafeteria.moveStudentFromExternalQueueToTurnstile();
-        const timeStenpTyping: number = this.getTimeStamp() + timeToType;
+        //Alteração DESTE EVENTO no estado do Sistema
+        const studentTimeToTypeInTurnstile: number = this.cafeteria.moveStudentFromExternalQueueToTurnstile();
 
-        //Possíveis novos Eventos gerados a partir deste Evento        
-        const scheduling1: Event = new GoingToInternalQueue(timeStenpTyping, this.cafeteria, this.machine);
-        this.machine.addEvent(scheduling1);
+        //Variáveis de controle e cirscuntâncias que irão gerar NOVOS eventos a partir deste
+        const totalTimeToTypeInTurnstile: number = this.getTimeStamp() + studentTimeToTypeInTurnstile;
+        console.log(`Ele vai entrar em qual segundo?: ${totalTimeToTypeInTurnstile}`);
+
+        //Se o estudante passou pela catraca é porque ele PODE ir para a Fila Interna
+        const scheduling: Event = new GoingToInternalQueue(totalTimeToTypeInTurnstile, this.cafeteria, this.machine);
+        this.machine.addEvent(scheduling);
     }
 }
