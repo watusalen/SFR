@@ -18,7 +18,6 @@ export class GoingToTurnstile extends Event {
 
         //Variáveis de controle e cirscuntâncias que irão gerar NOVOS eventos a partir deste
         const totalTimeToTypeInTurnstile: number = this.getTimeStamp() + studentTimeToTypeInTurnstile;
-        console.log(`Ele vai entrar em qual segundo?: ${totalTimeToTypeInTurnstile}`);
 
         //Se o estudante passou pela catraca é porque ele PODE ir para a Fila Interna
         const scheduling: Event = new GoingToInternalQueue(totalTimeToTypeInTurnstile, this.cafeteria, this.machine);
