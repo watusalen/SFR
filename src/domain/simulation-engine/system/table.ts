@@ -25,9 +25,6 @@ export class Table {
     }
 
     public getTableLimit(): number {
-        if (!this.tableLimit) {
-            throw new Error("O limite de mesas ainda não foi definido.");
-        }
         return this.tableLimit;
     }
 

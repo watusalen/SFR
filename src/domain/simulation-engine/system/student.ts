@@ -55,9 +55,6 @@ export class Student {
     }
 
     public getAttendedTime(): number {
-        if (!this.tableTime) {
-            throw new Error("O momento que leva para o estudante ser atendido não foi definido.");
-        }
         return this.attendedTime;
     }
 }
