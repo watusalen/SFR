@@ -16,20 +16,18 @@ export class StudentArrival extends Event {
         //Log
         console.log(`Evento - Chegada do estudante: ${this.getTimeStamp()}`);
 
-        //Alteração do estado do Sistema
+        //Alteração DESTE EVENTO no estado do Sistema
         this.cafeteria.addStudentToExternalQueue(this.student);
-
-        //Log
-        console.log(`Quantidade de Alunos na Fila Externa: ${this.cafeteria.getStudents()}`);
-
-        //Variáveis para controle de geração de novos Eventos
+        //Variáveis de controle e cirscuntâncias que irão gerar NOVOS eventos a partir deste
         const hasSomeoneInTurnstile: boolean = this.cafeteria.hasSomeoneInTurnstile();
-        const checkTunstileLocked: boolean = this.cafeteria.checkTurnstileLocked();
+        const turnstileAreLocked: boolean = this.cafeteria.checkTurnstileLocked();
+        console.log(`Tem alguém na Catraca?: ${hasSomeoneInTurnstile}`);
+        console.log(`A Catraca tá trancada?: ${turnstileAreLocked}`);
 
-        //Possíveis novos Eventos gerados a partir deste Evento
-        if (!hasSomeoneInTurnstile && !checkTunstileLocked) {
-            const scheduling1: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
-            this.machine.addEvent(scheduling1);
+        //Caso não haja ninguém na catraca e ela estiver destrancada, o evento de Ida a Catraca acontece
+        if (!hasSomeoneInTurnstile && !turnstileAreLocked) {
+            const scheduling: Event = new GoingToTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
+            this.machine.addEvent(scheduling);
         }
     }
 }
