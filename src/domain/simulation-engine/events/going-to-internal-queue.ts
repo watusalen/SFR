@@ -31,7 +31,7 @@ export class GoingToInternalQueue extends Event {
 
         const hasSomeoneInExternalQueue: boolean = this.cafeteria.hasSomeoneInExternalQueue();
         console.log(`Tem alguém na fila Externa?: ${hasSomeoneInExternalQueue}`);
-        const turnstileAreLocked: boolean = this.cafeteria.hasSomeoneInTurnstile();
+        const turnstileAreLocked: boolean = this.cafeteria.checkTurnstileLocked();
         console.log(`Tem alguém na Catraca?: ${turnstileAreLocked}`);
         const internalQueueSize: number = this.cafeteria.checkInternalQueueSize();
         console.log(`Tamanho da Fila Interna?: ${internalQueueSize}`);
