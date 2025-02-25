@@ -21,12 +21,12 @@ export class InternalQueue {
             throw new Error("Não é possível remover estudantes de uma fila que está vazia.");
         }
         return this.students.shift()!;
-    }  
+    }
 
     public checkInternalQueueLimitRecheadMaximum(): boolean {
         return this.students.length === this.internalQueueLimit;
     }
-    
+
     public checkSizeOfQueue(): number {
         return this.students.length;
     }

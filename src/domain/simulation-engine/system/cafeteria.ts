@@ -26,10 +26,10 @@ export class Cafeteria {
     }
 
     public moveStudentFromExternalQueueToTurnstile(): number {
-        if (this.turnstile.hasSomeone()) {
+        if (this.hasSomeoneInTurnstile()) {
             throw new Error("Não é possível adicionar um estudante a uma catraca que já está ocupada.");
         }
-        if (this.turnstile.getLocked()) {
+        if (this.checkTurnstileLocked()) {
             throw new Error("Não é possível adicionar um estudante a uma catraca que está trancada.");
         }
         const student: Student = this.externalQueue.removeStudent();
@@ -44,10 +44,10 @@ export class Cafeteria {
     }
 
     public moveStudentFromInternalQueueToService(): boolean {
-        if (this.service.hasSomeone()) {
+        if (this.hasSomeoneInService()) {
             throw new Error("Não é possível adicionar um estudante a um serviço que já está ocupado.");
         }
-        if (this.table.checkIfAllTableIsOccupied()) {
+        if (!this.hasTableAvaliable()) {
             throw new Error("Não é possível adicionar estudantes a uma mesa que já está ocupada.");
         }
         const student: Student = this.internalQueue.removeStudent();
@@ -55,25 +55,24 @@ export class Cafeteria {
         return true;
     }
 
-    public moveStudentFromServiceToTable(): number {
-        if (!this.service.hasSomeone()) {
+    public moveStudentFromServiceToTable(): Student {
+        if (!this.hasSomeoneInService) {
             throw new Error("Não há estudantes no serviço para mover para a mesa.");
         }
-        if (this.table.checkIfAllTableIsOccupied()) {
+        if (!this.hasTableAvaliable()) {
             throw new Error("Não é possível adicionar estudantes a uma mesa que já está ocupada.");
         }
         const student: Student = this.service.removeStudent();
-        const timeStenpInTable : number = student.getTableTime();
         this.table.addStudent(student);
-        return timeStenpInTable;
+        return student;
     }
 
     public timeStenpInService(): number {
         return this.service.timeStenpInService();
     }
 
-    public removeStudentFromCafeteria(): Student {
-        return this.table.removeStudent();
+    public removeStudentFromCafeteria(student: Student): void {
+        this.table.removeStudent(student);
     }
 
     public hasSomeoneInService(): boolean {
@@ -81,13 +80,6 @@ export class Cafeteria {
             return true;
         }
         return false;
-    }
-
-    public serviceLockBecauseHasSomeone(): boolean {
-        if (this.hasSomeoneInService()) {
-            this.lockTheService();
-            return true;
-        }
     }
 
     public checkServiceLocked(): boolean {
@@ -104,29 +96,8 @@ export class Cafeteria {
         return true;
     }
 
-    public checkAllTablesAreOccupied(): boolean {
-        return this.table.checkIfAllTableIsOccupied();
-    }
-
     public hasTableAvaliable(): boolean {
-        if (this.checkAllTablesAreOccupied()) {
-            return false;
-        }
-        return true;
-    }
-
-    public serviceLockBecauseTableIsFull(): boolean {
-        if (!this.hasTableAvaliable()) {
-            this.lockTheService();
-            return true;
-        }
-    }
-
-    public serviceUnlockBecauseTableGotEmpty(): boolean {
-        if (this.hasTableAvaliable()) {
-            this.unlockTheService();
-            return true;
-        }
+        return this.table.checkManyStudentsAreInTable() < this.table.getTableLimit();
     }
 
     public hasSomeoneInTurnstile(): boolean {
@@ -150,66 +121,41 @@ export class Cafeteria {
         return true;
     }
 
-    public turnstileLockBecauseHasSomeone(): boolean {
-        if (this.hasSomeoneInTurnstile()) {
-            this.lockTheTurnstile();
-            return true;
-        }
-    }
-
-    public turnstileUnlockBecauseHasNoOne(): boolean {
-        if (!this.hasSomeoneInTurnstile()) {
-            this.unlockTheTurnstile();
-            return true;
-        }
-    }
-
-    public turnstileUnlockBecauseTheQueueGotShorter(): boolean {
-        if (this.checkInternalQueueGotShorter()) {
-            this.unlockTheTurnstile();
-            return true;
-        }
-    }
-
-    public turnstileLockBecauseQueueIsFull(): boolean {
-        if (this.checkInternalQueueLimitRecheadMaximum()) {
-            this.lockTheTurnstile();
-            return true;
-        }
-    }
-
     public checkInternalQueueSize(): number {
         return this.internalQueue.checkSizeOfQueue();
-    }
-
-    public checkInternalQueueGotShorter(): boolean {
-        const minimumCapacity = this.internalQueue.getInternalQueueLimit() - this.turnstile.getTurnstileLimit();
-        return this.checkInternalQueueSize() <= minimumCapacity;
     }
 
     public checkInternalQueueLimitRecheadMaximum(): boolean {
         return this.internalQueue.checkInternalQueueLimitRecheadMaximum();
     }
 
-    public checkStudentsInTable(): number {
+    public checkManyStudentsAreInTable(): number {
         return this.table.checkManyStudentsAreInTable();
     }
 
-    public getStudents(): number {
+    public getSizeOfExternalQueue(): number {
         return this.externalQueue.getStudent();
     }
 
-    public hasSomeoneInExternalQueue(): boolean{
-        if(this.externalQueue.getStudent() > 0){
+    public hasSomeoneInExternalQueue(): boolean {
+        if (this.externalQueue.getStudent() > 0) {
             return true;
         }
         return false;
     }
 
-    public hasSomeoneInInternalQueue():boolean {
-        if(this.internalQueue.checkSizeOfQueue() > 0){
+    public hasSomeoneInInternalQueue(): boolean {
+        if (this.internalQueue.checkSizeOfQueue() > 0) {
             return true;
         }
         return false;
+    }
+
+    public getInternalQueueLimit(): number {
+        return this.internalQueue.getInternalQueueLimit();
+    }
+
+    public geturnstileLimit(): number {
+        return this.turnstile.getTurnstileLimit();
     }
 }

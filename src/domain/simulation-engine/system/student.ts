@@ -1,7 +1,6 @@
 export class Student {
     private arrivalMoment: number | undefined;
     private serviceMoment: number | undefined;
-    private timeToServe: number | undefined;
     private registrationTime: number;
     private attendedTime: number;
     private tableTime: number;
@@ -20,11 +19,11 @@ export class Student {
         this.serviceMoment = serviceMoment;
     }
 
-    public setTimeToServe(): void {
+    public getTimeToServe(): number {
         if (!this.arrivalMoment || !this.serviceMoment) {
             throw new Error("Os momentos de chegada e atendimento devem ser definidos antes de calcular o tempo de atendimento.");
         }
-        this.timeToServe = this.serviceMoment - this.arrivalMoment;
+        return this.serviceMoment - this.arrivalMoment;
     }
 
     public getArrivalMoment(): number {
@@ -46,13 +45,6 @@ export class Student {
             throw new Error("O momento de digitação do estudante não foi definido.");
         }
         return this.registrationTime;
-    }
-
-    public getTimeToServe(): number {
-        if (!this.timeToServe) {
-            throw new Error("O tempo da chegada até o atendimento não foi definido.");
-        }
-        return this.timeToServe;
     }
 
     public getTableTime(): number {
