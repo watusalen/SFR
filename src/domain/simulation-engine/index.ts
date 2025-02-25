@@ -3,16 +3,16 @@ import { Cafeteria } from "./system/cafeteria";
 import { EventMachine } from "./events/event-machine";
 import { StudentArrival } from "./events/student-arrival";
 
-const cafeteria = new Cafeteria(5, 2, 1);
+const cafeteria = new Cafeteria(5, 3, 1);
 const eventMachine = new EventMachine();
 
 const student1: Student = new Student(10, 100, 10);
-const student2: Student = new Student(10, 100, 10);
-const student3: Student = new Student(10, 100, 10);
-const student4: Student = new Student(10, 100, 10);
-const student5: Student = new Student(10, 100, 10);
-const student6: Student = new Student(10, 100, 10);
-const student7: Student = new Student(10, 100, 10);
+const student2: Student = new Student(11, 101, 11);
+const student3: Student = new Student(12, 102, 12);
+const student4: Student = new Student(13, 103, 13);
+const student5: Student = new Student(15, 104, 14);
+const student6: Student = new Student(16, 105, 15);
+const student7: Student = new Student(17, 106, 16);
 
 const event1 = new StudentArrival(1, cafeteria, eventMachine, student1);
 const event2 = new StudentArrival(2, cafeteria, eventMachine, student2);

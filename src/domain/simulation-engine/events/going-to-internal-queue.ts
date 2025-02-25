@@ -31,7 +31,7 @@ export class GoingToInternalQueue extends Event {
 
         const hasSomeoneInExternalQueue: boolean = this.cafeteria.hasSomeoneInExternalQueue();
         console.log(`Tem alguém na fila Externa?: ${hasSomeoneInExternalQueue}`);
-        const turnstileAreLocked: boolean = this.cafeteria.hasSomeoneInTurnstile();
+        const turnstileAreLocked: boolean = this.cafeteria.checkTurnstileLocked();
         console.log(`Tem alguém na Catraca?: ${turnstileAreLocked}`);
         const internalQueueSize: number = this.cafeteria.checkInternalQueueSize();
         console.log(`Tamanho da Fila Interna?: ${internalQueueSize}`);
@@ -40,7 +40,7 @@ export class GoingToInternalQueue extends Event {
         const hasSomeoneInService: boolean = this.cafeteria.hasSomeoneInService();
         console.log(`Tem alguém no Atendimento?: ${hasSomeoneInService}`);
         const hasTableAvaliable: boolean = this.cafeteria.hasTableAvaliable();
-        console.log(`Tem mesa disponível?: ${hasSomeoneInService}`);
+        console.log(`Tem mesa disponível?: ${hasTableAvaliable}`);
 
         //Vai direto pro Atendimento se não estiver trancado e não houver ninguém na fila interna além dele
         if (!serviceAreLocked && !hasSomeoneInService && (internalQueueSize == 1) && hasTableAvaliable) {
