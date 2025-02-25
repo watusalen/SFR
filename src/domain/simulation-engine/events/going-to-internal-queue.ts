@@ -32,7 +32,7 @@ export class GoingToInternalQueue extends Event {
             const scheduling01: Event = new LockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);
             this.machine.addEvent(scheduling01);
         }
-
+      
         //Vai direto pro Atendimento se não estiver trancado e não houver ninguém na fila interna além dele
         if (!serviceAreLocked && !hasSomeoneInService && (internalQueueSize == 1) && hasTableAvaliable) {
             const scheduling02: Event = new GoingToService(this.getTimeStamp(), this.cafeteria, this.machine);
