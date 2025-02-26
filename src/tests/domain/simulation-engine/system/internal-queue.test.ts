@@ -3,67 +3,52 @@ import { Student } from "@/domain/simulation-engine/system/student";
 
 describe('InternalQueue', () => {
     let internalQueue: InternalQueue;
-    let student: Student;
+    let student1: Student;
+    let student2: Student;
 
     beforeEach(() => {
-        internalQueue = new InternalQueue(2); // Limite de 2 estudantes
-        student = new Student(1000, 2000, 3000);
+        internalQueue = new InternalQueue(2); // Limite de 2 estudantes na fila
+        student1 = new Student(10, 2); // registrationTime = 10, tableTime = 2
+        student2 = new Student(15, 3); // registrationTime = 15, tableTime = 3
     });
 
-    // Testes para addStudent
-    describe('addStudent', () => {
-        it('should add a student to the internal queue', () => {
-            internalQueue.addStudent(student);
-            expect(internalQueue.checkSizeOfQueue()).toBe(1);
-        });
-
-        it('should throw an error if the internal queue is full', () => {
-            internalQueue.addStudent(student);
-            internalQueue.addStudent(student);
-            expect(() => internalQueue.addStudent(student)).toThrow("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
-        });
+    it('should add a student to the queue', () => {
+        internalQueue.addStudent(student1);
+        expect(internalQueue.checkSizeOfQueue()).toBe(1);
     });
 
-    // Testes para removeStudent
-    describe('removeStudent', () => {
-        it('should remove a student from the internal queue', () => {
-            internalQueue.addStudent(student);
-            const removedStudent = internalQueue.removeStudent();
-            expect(removedStudent).toBe(student);
-            expect(internalQueue.checkSizeOfQueue()).toBe(0);
-        });
-
-        it('should throw an error if the internal queue is empty', () => {
-            expect(() => internalQueue.removeStudent()).toThrow("Não é possível remover estudantes de uma fila que está vazia.");
-        });
+    it('should throw an error when adding a student to a full queue', () => {
+        internalQueue.addStudent(student1);
+        internalQueue.addStudent(student2);
+        expect(() => internalQueue.addStudent(student1)).toThrow("Não é possível adicionar um estudante a uma fila interna que já está cheia.");
     });
 
-    // Testes para checkInternalQueueLimitRecheadMaximum
-    describe('checkInternalQueueLimitRecheadMaximum', () => {
-        it('should return true if the internal queue limit is reached', () => {
-            internalQueue.addStudent(student);
-            internalQueue.addStudent(student);
-            expect(internalQueue.checkInternalQueueLimitRecheadMaximum()).toBe(true);
-        });
-
-        it('should return false if the internal queue limit is not reached', () => {
-            internalQueue.addStudent(student);
-            expect(internalQueue.checkInternalQueueLimitRecheadMaximum()).toBe(false);
-        });
+    it('should remove a student from the queue', () => {
+        internalQueue.addStudent(student1);
+        const removedStudent = internalQueue.removeStudent();
+        expect(removedStudent).toBe(student1);
+        expect(internalQueue.checkSizeOfQueue()).toBe(0);
     });
 
-    // Testes para checkSizeOfQueue
-    describe('checkSizeOfQueue', () => {
-        it('should return the size of the internal queue', () => {
-            internalQueue.addStudent(student);
-            expect(internalQueue.checkSizeOfQueue()).toBe(1);
-        });
+    it('should throw an error when removing a student from an empty queue', () => {
+        expect(() => internalQueue.removeStudent()).toThrow("Não é possível remover estudantes de uma fila que está vazia.");
     });
 
-    // Testes para getInternalQueueLimit
-    describe('getInternalQueueLimit', () => {
-        it('should return the internal queue limit', () => {
-            expect(internalQueue.getInternalQueueLimit()).toBe(2);
-        });
+    it('should check if the queue limit is reached', () => {
+        internalQueue.addStudent(student1);
+        expect(internalQueue.checkInternalQueueLimitRecheadMaximum()).toBe(false);
+
+        internalQueue.addStudent(student2);
+        expect(internalQueue.checkInternalQueueLimitRecheadMaximum()).toBe(true);
+    });
+
+    it('should check the size of the queue', () => {
+        expect(internalQueue.checkSizeOfQueue()).toBe(0);
+        internalQueue.addStudent(student1);
+        expect(internalQueue.checkSizeOfQueue()).toBe(1);
+    });
+
+    it('should get the internal queue limit', () => {
+        expect(internalQueue.getInternalQueueLimit()).toBe(2);
     });
 });
