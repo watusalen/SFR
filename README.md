@@ -27,7 +27,7 @@ The original code contains mocked classes that must be replaced with complete im
 
 ## Project Status  
 ✅ Initial repository structure created.  
-🔄 Development of the simulation engine.  
+✅ Development of the simulation engine.  
 ✅ Creation of the simulation repository.  
 🔄 Validation and testing of the simulation.  
 
