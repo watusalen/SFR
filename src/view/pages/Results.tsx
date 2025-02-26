@@ -89,7 +89,7 @@ const Results = () => {
       <div className="space-y-8">
         <ChartCard
           title="Tamanho da Fila Interna ao Longo do Tempo"
-          data={results.intertalQueueSizeOverTime}
+          data={results.internalQueueSizeOverTime}
           dataKey="value"
           yAxisLabel="Tamanho da Fila"
           lineColor="#8884d8"
