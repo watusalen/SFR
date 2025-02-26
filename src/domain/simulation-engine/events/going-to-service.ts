@@ -23,7 +23,8 @@ export class GoingToService extends Event {
         const placesForTheTurnstileRelease: number = this.cafeteria.geturnstileLimit();
         const internalQueueSmallerThanLimit: boolean = (internalQueueLimit - manyStudentsAreInInternalQueue) >= placesForTheTurnstileRelease;
         const studentTimeToBeAttended: number = this.getTimeStamp() + this.cafeteria.timeStenpInService();
-        const turnstileAreLocked : boolean = this.cafeteria.checkTurnstileLocked();
+        const turnstileAreLocked: boolean = this.cafeteria.checkTurnstileLocked();
+
         //Se a quantidade de pessoas na Fila Interna for o suficiente para que a Catraca libere
         if (internalQueueSmallerThanLimit && turnstileAreLocked) {
             const scheduling01: Event = new UnlockTurnstile(this.getTimeStamp(), this.cafeteria, this.machine);

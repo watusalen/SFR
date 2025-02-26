@@ -21,8 +21,6 @@ export class StudentArrival extends Event {
         //Variáveis de controle e cirscuntâncias que irão gerar NOVOS eventos a partir deste
         const hasSomeoneInTurnstile: boolean = this.cafeteria.hasSomeoneInTurnstile();
         const turnstileAreLocked: boolean = this.cafeteria.checkTurnstileLocked();
-        console.log(`Tem alguém na Catraca?: ${hasSomeoneInTurnstile}`);
-        console.log(`A Catraca tá trancada?: ${turnstileAreLocked}`);
 
         //Caso não haja ninguém na catraca e ela estiver destrancada, o evento de Ida a Catraca acontece
         if (sucess && !hasSomeoneInTurnstile && !turnstileAreLocked) {
