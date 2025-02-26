@@ -22,13 +22,13 @@ export class MockSimulator implements SimulatorI {
     onError: (error: Error) => void
   ): () => void {
     this.currentProgress = 0;
-    
+
     // Simulação de progresso com intervalo de 1 segundo
     this.intervalId = window.setInterval(() => {
       try {
         this.currentProgress += 10;
-        
-        
+
+
 
         // Completa a simulação quando chegar a 100%
         if (this.currentProgress >= 100) {
@@ -92,7 +92,7 @@ export class MockSimulator implements SimulatorI {
   ): MetricOverTime[] {
     const data: MetricOverTime[] = [];
     const steps = 10;
-    
+
     for (let i = 0; i <= steps; i++) {
       data.push(new MetricOverTime((duration / steps) * i, this.randomBetween(min, max)));
     }

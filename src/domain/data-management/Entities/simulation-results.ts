@@ -2,7 +2,7 @@
  * Represents the results of a simulation.
  */
 export class SimulationResults {
-  intertalQueueSizeOverTime: MetricOverTime[];
+  internalQueueSizeOverTime: MetricOverTime[];
   externalQueueSizeOverTime: MetricOverTime[];
   tableOccupancyOverTime: MetricOverTime[];
   averageWaitTime: number;
@@ -14,7 +14,7 @@ export class SimulationResults {
 
   /**
    * Creates an instance of SimulationResults.
-   * @param intertalQueueSizeOverTime - Array of internal queue size metrics over time.
+   * @param internalQueueSizeOverTime - Array of internal queue size metrics over time.
    * @param externalQueueSizeOverTime - Array of external queue size metrics over time.
    * @param tableOccupancyOverTime - Array of table occupancy metrics over time.
    * @param averageWaitTime - The average wait time.
@@ -25,7 +25,7 @@ export class SimulationResults {
    * @param simulationDurationReal - The real time simulation duration.
    */
   constructor(
-    intertalQueueSizeOverTime: MetricOverTime[],
+    internalQueueSizeOverTime: MetricOverTime[],
     externalQueueSizeOverTime: MetricOverTime[],
     tableOccupancyOverTime: MetricOverTime[],
     averageWaitTime: number,
@@ -35,7 +35,7 @@ export class SimulationResults {
     simulationDuration: number,
     simulationDurationReal : number
   ) {
-    this.intertalQueueSizeOverTime = intertalQueueSizeOverTime;
+    this.internalQueueSizeOverTime = internalQueueSizeOverTime;
     this.externalQueueSizeOverTime = externalQueueSizeOverTime;
     this.tableOccupancyOverTime = tableOccupancyOverTime;
     this.averageWaitTime = this.validateNonNegative(averageWaitTime, 'averageWaitTime');

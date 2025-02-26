@@ -12,12 +12,12 @@ export class Cafeteria {
     private turnstile: Turnstile;
     private service: Service;
 
-    constructor(internalQueueLimit: number, turnstileLimit: number, amount: number) {
+    constructor(internalQueueLimit: number, turnstileLimit: number, tableLimit: number) {
         this.internalQueue = new InternalQueue(internalQueueLimit);
         this.turnstile = new Turnstile(turnstileLimit);
         this.externalQueue = new ExternalQueue();
         this.service = new Service();
-        this.table = new Table(amount);
+        this.table = new Table(tableLimit);
     }
 
     public addStudentToExternalQueue(student: Student): boolean {
@@ -43,7 +43,7 @@ export class Cafeteria {
         return true;
     }
 
-    public moveStudentFromInternalQueueToService(): boolean {
+    public moveStudentFromInternalQueueToService(): Student {
         if (this.hasSomeoneInService()) {
             throw new Error("Não é possível adicionar um estudante a um serviço que já está ocupado.");
         }
@@ -52,7 +52,7 @@ export class Cafeteria {
         }
         const student: Student = this.internalQueue.removeStudent();
         this.service.addStudent(student);
-        return true;
+        return student;
     }
 
     public moveStudentFromServiceToTable(): Student {
@@ -65,10 +65,6 @@ export class Cafeteria {
         const student: Student = this.service.removeStudent();
         this.table.addStudent(student);
         return student;
-    }
-
-    public timeStenpInService(): number {
-        return this.service.timeStenpInService();
     }
 
     public removeStudentFromCafeteria(student: Student): void {
