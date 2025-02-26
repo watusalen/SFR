@@ -14,6 +14,7 @@ export class EventMachine {
             this.eventQueue.sort((event1, event2) => event1.getTimeStamp() - event2.getTimeStamp());
             const event: Event = this.eventQueue.shift()!;
             event.processEvent();
+            this.updateSimulationTime(event.getTimeStamp());
         }
     }
 
