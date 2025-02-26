@@ -29,7 +29,7 @@ The original code contains mocked classes that must be replaced with complete im
 ✅ Initial repository structure created.  
 ✅ Development of the simulation engine.  
 ✅ Creation of the simulation repository.  
-🔄 Validation and testing of the simulation.  
+✅ Validation and testing of the simulation.  
 
 This project will be updated as new features are implemented.  
 
